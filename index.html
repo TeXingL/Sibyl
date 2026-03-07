@@ -1,0 +1,2099 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#00f0ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sibyl">
+  <title>Sibyl</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%2305010e'/%3E%3Crect x='10' y='10' width='108' height='108' rx='20' fill='%2314091f' stroke='%2300f0ff' stroke-width='3'/%3E%3Cpath d='M35 29h58v12H52v18h36c18 0 28 10 28 24 0 18-13 28-31 28H29V99h55c12 0 19-6 19-16 0-8-6-13-16-13H35V29Z' fill='%23eefbff'/%3E%3Ccircle cx='94' cy='33' r='8' fill='%23ff5b5b'/%3E%3Ccircle cx='34' cy='96' r='7' fill='%2394ff3b'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg-0: #05010e;
+      --bg-1: #0d0317;
+      --panel: rgba(17, 8, 28, 0.82);
+      --panel-strong: rgba(8, 3, 16, 0.92);
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #eefbff;
+      --muted: rgba(238, 251, 255, 0.68);
+      --muted-soft: rgba(238, 251, 255, 0.44);
+      --cyan: #00f0ff;
+      --blue: #4da3ff;
+      --lime: #94ff3b;
+      --yellow: #ffd84d;
+      --red: #ff5b5b;
+      --shadow-cyan: 0 0 0 1px rgba(0, 240, 255, 0.16), 0 0 28px rgba(0, 240, 255, 0.14);
+      --shadow-blue: 0 0 0 1px rgba(77, 163, 255, 0.16), 0 0 28px rgba(77, 163, 255, 0.14);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg-0);
+      color: var(--text);
+      font-family: "Helvetica Neue", "Avenir Next", "Segoe UI", Arial, sans-serif;
+      font-weight: 400;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top, rgba(77, 163, 255, 0.18), transparent 26%),
+        radial-gradient(circle at 85% 12%, rgba(255, 216, 77, 0.16), transparent 24%),
+        radial-gradient(circle at 14% 88%, rgba(148, 255, 59, 0.1), transparent 22%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-0));
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      inset: 0;
+      pointer-events: none;
+      position: fixed;
+      z-index: 0;
+    }
+
+    body::before {
+      background-image:
+        linear-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.08) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(circle at center, black, transparent 84%);
+      opacity: 0.28;
+    }
+
+    body::after {
+      background:
+        repeating-linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.025) 0,
+          rgba(255, 255, 255, 0.025) 1px,
+          transparent 2px,
+          transparent 4px
+        );
+      opacity: 0.18;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      background: none;
+      padding: 0;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      background: rgba(0, 0, 0, 0.24);
+      padding: 14px 15px;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(238, 251, 255, 0.3);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(0, 240, 255, 0.58);
+      box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.14);
+      background: rgba(0, 0, 0, 0.32);
+    }
+
+    textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    .app-shell {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 18px 16px calc(112px + env(safe-area-inset-bottom));
+      position: relative;
+      z-index: 1;
+    }
+
+    .glow-orb {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(54px);
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .orb-cyan {
+      inset: 28px 32px auto 24px;
+      height: 120px;
+      background: rgba(0, 240, 255, 0.12);
+    }
+
+    .orb-magenta {
+      right: 8px;
+      top: 154px;
+      width: 108px;
+      height: 108px;
+      background: rgba(77, 163, 255, 0.15);
+    }
+
+    .eyebrow,
+    .tiny-label,
+    .segment,
+    .chip,
+    .stat-label,
+    .detail-meta,
+    .floating-caption {
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+
+    .display {
+      font-family: "Helvetica Neue", "Avenir Next", "Arial Narrow", sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-size: 40px;
+      line-height: 0.96;
+      margin: 10px 0 0;
+    }
+
+    .hero-copy {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+      margin: 14px 0 0;
+      max-width: 25rem;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      color: rgba(0, 240, 255, 0.8);
+    }
+
+    .tiny-label {
+      font-size: 10px;
+      color: var(--muted-soft);
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 18px;
+      margin-top: 14px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
+        var(--panel);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow-cyan);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.7), transparent);
+      opacity: 0.7;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .panel-title {
+      margin: 6px 0 0;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .counter-pill,
+    .action-pill,
+    .score-pill,
+    .mini-action,
+    .tag,
+    .notice,
+    .detail-card,
+    .lane-pill {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .counter-pill,
+    .action-pill {
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .action-pill {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: rgba(0, 240, 255, 0.3);
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .dashboard-total {
+      border-radius: 26px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .dashboard-score {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .dashboard-score strong {
+      font-size: 68px;
+      line-height: 0.9;
+    }
+
+    .bar-track {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+    }
+
+    .bar-total {
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      box-shadow: 0 0 22px rgba(0, 240, 255, 0.32);
+    }
+
+    .lane-grid,
+    .backup-grid,
+    .metric-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .lane-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lane-card {
+      border-radius: 24px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .lane-card.self {
+      box-shadow: var(--shadow-cyan);
+      border-color: rgba(0, 240, 255, 0.24);
+    }
+
+    .lane-card.world {
+      box-shadow: var(--shadow-blue);
+      border-color: rgba(77, 163, 255, 0.24);
+    }
+
+    .lane-card h3 {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .lane-card strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .lane-card p,
+    .helper-copy,
+    .backup-copy,
+    .empty-copy,
+    .entry-note,
+    .detail-copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .helper-copy {
+      margin: 14px 0 0;
+      color: rgba(238, 251, 255, 0.5);
+    }
+
+    .backup-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .metric-card,
+    .detail-card {
+      border-radius: 22px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    .metric-value {
+      display: block;
+      margin-top: 8px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-entry,
+    .thing-detail,
+    .rating-entry,
+    .empty-state {
+      border-radius: 24px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px;
+    }
+
+    .timeline-entry-head,
+    .thing-detail-head,
+    .rating-entry-head,
+    .row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .source-badge {
+      width: 46px;
+      min-width: 46px;
+      height: 46px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .source-self {
+      color: var(--cyan);
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    .source-world {
+      color: var(--blue);
+      background: rgba(77, 163, 255, 0.1);
+      border: 1px solid rgba(77, 163, 255, 0.3);
+    }
+
+    .entry-title,
+    .thing-name {
+      margin: 0;
+      font-size: 15px;
+      font-family: "Helvetica Neue", "Avenir Next", "Arial Narrow", sans-serif;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .entry-note {
+      margin: 8px 0 0;
+    }
+
+    .score-pill,
+    .lane-pill {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .score-positive,
+    .lane-positive {
+      color: var(--lime);
+      background: rgba(199, 255, 58, 0.1);
+      border-color: rgba(199, 255, 58, 0.3);
+    }
+
+    .score-negative,
+    .lane-negative {
+      color: var(--red);
+      background: rgba(255, 91, 91, 0.1);
+      border-color: rgba(255, 91, 91, 0.3);
+    }
+
+    .tag-row,
+    .entry-actions,
+    .thing-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag,
+    .mini-action {
+      padding: 7px 10px;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(238, 251, 255, 0.6);
+    }
+
+    .mini-action {
+      transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+    }
+
+    .mini-action:hover {
+      border-color: rgba(0, 240, 255, 0.35);
+      color: var(--cyan);
+    }
+
+    .mini-action.delete:hover {
+      border-color: rgba(255, 91, 91, 0.35);
+      color: var(--red);
+    }
+
+    .thing-strip {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scroll-snap-type: x proximity;
+    }
+
+    .thing-tile {
+      min-width: 238px;
+      border-radius: 26px;
+      padding: 14px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
+        rgba(17, 8, 28, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+      scroll-snap-align: start;
+      text-align: left;
+    }
+
+    .thing-tile.active {
+      border-color: rgba(199, 255, 58, 0.34);
+      box-shadow: 0 0 0 1px rgba(199, 255, 58, 0.12), 0 0 28px rgba(199, 255, 58, 0.09);
+    }
+
+    .thing-chart {
+      margin-top: 12px;
+      height: 112px;
+      width: 100%;
+      display: block;
+    }
+
+    .thing-chart-empty {
+      height: 112px;
+      border-radius: 18px;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      display: grid;
+      place-items: center;
+      color: rgba(238, 251, 255, 0.36);
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 11px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .thing-detail {
+      margin-top: 14px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .rating-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .empty-state {
+      text-align: center;
+    }
+
+    .empty-copy {
+      margin: 10px 0 0;
+    }
+
+    .floating-bar {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      width: min(430px, 100%);
+      transform: translateX(-50%);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      z-index: 8;
+    }
+
+    .floating-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 10px;
+      border-radius: 28px;
+      border: 1px solid rgba(0, 240, 255, 0.22);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0)),
+        var(--panel-strong);
+      padding: 10px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 0 32px rgba(0, 240, 255, 0.12);
+    }
+
+    .quick-add {
+      border-radius: 22px;
+      padding: 14px 16px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.32);
+      text-align: left;
+      color: var(--text);
+    }
+
+    .quick-add strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+      font-family: "Helvetica Neue", "Avenir Next", "Arial Narrow", sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .quick-pill {
+      border-radius: 22px;
+      padding: 0 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(238, 251, 255, 0.72);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      min-width: 74px;
+    }
+
+    .notice {
+      padding: 12px 14px;
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .notice.success {
+      color: var(--lime);
+      background: rgba(199, 255, 58, 0.1);
+      border-color: rgba(199, 255, 58, 0.3);
+    }
+
+    .notice.error {
+      color: var(--red);
+      background: rgba(255, 91, 91, 0.1);
+      border-color: rgba(255, 91, 91, 0.3);
+    }
+
+    .sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      z-index: 12;
+    }
+
+    .sheet-backdrop.open {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .sheet {
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      border-radius: 32px 32px 0 0;
+      padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0)),
+        var(--panel-strong);
+      box-shadow: 0 -24px 56px rgba(0, 240, 255, 0.14);
+    }
+
+    .sheet-handle {
+      width: 56px;
+      height: 6px;
+      border-radius: 999px;
+      margin: 0 auto 16px;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .sheet-title {
+      margin: 6px 0 0;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .sheet-close {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(238, 251, 255, 0.66);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(238, 251, 255, 0.55);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .segment-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .segment-button {
+      flex: 1;
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .segment-button.active-self {
+      border-color: rgba(0, 240, 255, 0.36);
+      background: rgba(0, 240, 255, 0.1);
+      color: var(--cyan);
+    }
+
+    .segment-button.active-world {
+      border-color: rgba(77, 163, 255, 0.36);
+      background: rgba(77, 163, 255, 0.1);
+      color: var(--blue);
+    }
+
+    .primary-submit {
+      width: 100%;
+      border-radius: 22px;
+      padding: 16px 18px;
+      border: 1px solid rgba(0, 240, 255, 0.34);
+      background: rgba(0, 240, 255, 0.1);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .primary-submit.magenta {
+      border-color: rgba(77, 163, 255, 0.34);
+      background: rgba(77, 163, 255, 0.1);
+    }
+
+    .primary-submit.lime {
+      border-color: rgba(199, 255, 58, 0.34);
+      background: rgba(199, 255, 58, 0.1);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    ::selection {
+      background: rgba(77, 163, 255, 0.28);
+      color: #fff;
+    }
+
+    .date-button {
+      padding: 10px 12px;
+      text-align: right;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 216, 77, 0.22);
+      background: rgba(255, 216, 77, 0.08);
+      min-width: 108px;
+    }
+
+    .date-label {
+      margin-top: 6px;
+      font-size: 14px;
+      color: rgba(238, 251, 255, 0.88);
+      white-space: nowrap;
+    }
+
+    .point-row {
+      display: grid;
+      grid-template-columns: 118px minmax(0, 1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .sign-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .sign-button {
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 16px;
+      font-weight: 600;
+      display: grid;
+      place-items: center;
+      min-height: 50px;
+    }
+
+    .sign-button.active-plus {
+      border-color: rgba(148, 255, 59, 0.34);
+      background: rgba(148, 255, 59, 0.1);
+      color: var(--lime);
+    }
+
+    .sign-button.active-minus {
+      border-color: rgba(255, 91, 91, 0.34);
+      background: rgba(255, 91, 91, 0.1);
+      color: var(--red);
+    }
+
+    @media (max-width: 360px) {
+      .dashboard-score strong {
+        font-size: 58px;
+      }
+
+      .field-row,
+      .point-row {
+        grid-template-columns: 1fr;
+      }
+
+      .floating-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .quick-pill {
+        min-height: 46px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <input id="import-input" class="sr-only" type="file" accept="application/json">
+  <div id="sheet-backdrop" class="sheet-backdrop" aria-hidden="true"></div>
+  <script>
+    (function () {
+      "use strict";
+
+      var STORAGE_KEY = "sibyl.singlefile.v1";
+      var BASE_SELF = 50;
+      var BASE_WORLD = 50;
+
+      var ui = {
+        modal: null,
+        selectedThingId: null,
+        dayKey: toDayKey(new Date()),
+        notice: null
+      };
+
+      var state = loadState();
+      ui.selectedThingId = state.things[0] ? state.things[0].id : null;
+
+      var app = document.getElementById("app");
+      var importInput = document.getElementById("import-input");
+      var sheetBackdrop = document.getElementById("sheet-backdrop");
+
+      document.addEventListener("click", handleClick);
+      document.addEventListener("submit", handleSubmit);
+      document.addEventListener("change", handleChange);
+
+      render();
+
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            var seed = makeSeedData();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
+            return seed;
+          }
+          var parsed = JSON.parse(raw);
+          if (isValidState(parsed)) {
+            return parsed;
+          }
+        } catch (error) {
+          console.warn("Sibyl storage reset", error);
+        }
+        var fallback = makeSeedData();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(fallback));
+        return fallback;
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function makeSeedData() {
+        var morningPagesId = "thing-morning-pages";
+        var workoutId = "thing-workout";
+        var sleepId = "thing-sleep";
+
+        return {
+          version: 1,
+          events: [
+            {
+              id: "event-morning-pages",
+              title: "Finished morning pages",
+              points: 10,
+              source: "self",
+              note: "Three pages before checking messages.",
+              timestamp: makeIso(0, 7, 12),
+              tags: ["writing", "ritual"]
+            },
+            {
+              id: "event-runny-nose",
+              title: "Runny nose",
+              points: -4,
+              source: "outside",
+              note: "Low-key irritating all morning.",
+              timestamp: makeIso(0, 8, 3),
+              tags: ["body"]
+            },
+            {
+              id: "event-walk",
+              title: "Walked 35 minutes",
+              points: 6,
+              source: "self",
+              note: "Used lunch to reset instead of doomscrolling.",
+              timestamp: makeIso(0, 12, 40),
+              tags: ["movement"]
+            },
+            {
+              id: "event-delay",
+              title: "Train delay",
+              points: -3,
+              source: "outside",
+              note: "Lost half an hour on the platform.",
+              timestamp: makeIso(0, 18, 10),
+              tags: ["transit"]
+            },
+            {
+              id: "event-dinner",
+              title: "Cooked dinner at home",
+              points: 5,
+              source: "self",
+              note: "Simple food, solid reset.",
+              timestamp: makeIso(0, 19, 45),
+              tags: ["food", "home"]
+            }
+          ],
+          things: [
+            {
+              id: morningPagesId,
+              name: "Morning Pages",
+              createdAt: makeIso(-12, 8, 0)
+            },
+            {
+              id: workoutId,
+              name: "Workout",
+              createdAt: makeIso(-12, 9, 0)
+            },
+            {
+              id: sleepId,
+              name: "Sleep",
+              createdAt: makeIso(-12, 10, 0)
+            }
+          ],
+          ratings: [
+            {
+              id: "rating-mp-1",
+              thingId: morningPagesId,
+              points: -10,
+              note: "Skipped it completely and the whole day felt thinner.",
+              timestamp: makeIso(-2, 8, 5)
+            },
+            {
+              id: "rating-mp-2",
+              thingId: morningPagesId,
+              points: 16,
+              note: "Locked in and wrote past the timer.",
+              timestamp: makeIso(-1, 7, 30)
+            },
+            {
+              id: "rating-mp-3",
+              thingId: morningPagesId,
+              points: 10,
+              note: "Clean start and steady focus.",
+              timestamp: makeIso(0, 7, 12)
+            },
+            {
+              id: "rating-workout-1",
+              thingId: workoutId,
+              points: 12,
+              note: "Full session without touching the phone.",
+              timestamp: makeIso(-1, 18, 40)
+            },
+            {
+              id: "rating-workout-2",
+              thingId: workoutId,
+              points: 6,
+              note: "Walk counts. Not maximal, but real.",
+              timestamp: makeIso(0, 12, 40)
+            },
+            {
+              id: "rating-sleep-1",
+              thingId: sleepId,
+              points: -8,
+              note: "Restless and woke too early.",
+              timestamp: makeIso(-2, 6, 30)
+            },
+            {
+              id: "rating-sleep-2",
+              thingId: sleepId,
+              points: 9,
+              note: "Seven quiet hours, no interruptions.",
+              timestamp: makeIso(-1, 6, 50)
+            }
+          ]
+        };
+      }
+
+      function isValidState(input) {
+        return !!input &&
+          input.version === 1 &&
+          Array.isArray(input.events) &&
+          Array.isArray(input.things) &&
+          Array.isArray(input.ratings) &&
+          input.events.every(function (item) {
+            return item &&
+              typeof item.id === "string" &&
+              typeof item.title === "string" &&
+              typeof item.points === "number" &&
+              (item.source === "self" || item.source === "outside") &&
+              typeof item.note === "string" &&
+              typeof item.timestamp === "string" &&
+              Array.isArray(item.tags);
+          }) &&
+          input.things.every(function (item) {
+            return item &&
+              typeof item.id === "string" &&
+              typeof item.name === "string" &&
+              typeof item.createdAt === "string";
+          }) &&
+          input.ratings.every(function (item) {
+            return item &&
+              typeof item.id === "string" &&
+              typeof item.thingId === "string" &&
+              typeof item.points === "number" &&
+              typeof item.note === "string" &&
+              typeof item.timestamp === "string";
+          });
+      }
+
+      function calculateScore(events) {
+        var selfPoints = BASE_SELF;
+        var worldPoints = BASE_WORLD;
+
+        events.forEach(function (event) {
+          if (event.source === "self") {
+            selfPoints += event.points;
+          } else {
+            worldPoints += event.points;
+          }
+        });
+
+        var self = clamp(selfPoints, 0, 50);
+        var world = clamp(worldPoints, 0, 50);
+
+        return {
+          self: self,
+          world: world,
+          total: clamp(self + world, 0, 100)
+        };
+      }
+
+      function render() {
+        ensureSelectedThing();
+
+        var todayKey = ui.dayKey;
+        var todaysEvents = state.events
+          .filter(function (event) { return toDayKey(event.timestamp) === todayKey; })
+          .sort(function (a, b) { return b.timestamp.localeCompare(a.timestamp); });
+
+        var score = calculateScore(todaysEvents);
+        var thingSummaries = buildThingSummaries();
+        var selectedThing = thingSummaries.find(function (summary) {
+          return summary.thing.id === ui.selectedThingId;
+        }) || thingSummaries[0] || null;
+
+        app.innerHTML =
+          '<main class="app-shell">' +
+            '<div class="glow-orb orb-cyan"></div>' +
+            '<div class="glow-orb orb-magenta"></div>' +
+            renderHeader() +
+            (ui.notice ? renderNotice(ui.notice) : "") +
+            renderDashboard(score, todaysEvents.length) +
+            renderBackup() +
+            renderTimeline(todaysEvents) +
+            renderThings(thingSummaries, selectedThing) +
+          '</main>' +
+          renderFloatingBar();
+
+        renderModal();
+      }
+
+      function renderHeader() {
+        var dayDate = fromDayKey(ui.dayKey);
+        return '' +
+          '<header>' +
+            '<div class="row-between">' +
+              '<div>' +
+                '<div class="eyebrow">Sibyl</div>' +
+                '<h1 class="display hero-title">Sibyl</h1>' +
+              '</div>' +
+              '<button class="date-button" data-action="open-day-picker" type="button">' +
+                '<div class="tiny-label">Day</div>' +
+                '<div class="date-label">' + escapeHtml(formatDayLabel(dayDate)) + '</div>' +
+              '</button>' +
+            '</div>' +
+          '</header>';
+      }
+
+      function renderNotice(notice) {
+        return '<div class="notice ' + notice.tone + '">' + escapeHtml(notice.text) + '</div>';
+      }
+
+      function renderDashboard(score, eventCount) {
+        return '' +
+          '<section class="panel">' +
+            '<div class="panel-head">' +
+              '<div>' +
+                '<div class="eyebrow">Daily Signal</div>' +
+                '<h2 class="display panel-title">Dashboard</h2>' +
+              '</div>' +
+              '<div class="counter-pill" style="text-align:right">' +
+                '<div class="tiny-label" style="color:rgba(199,255,58,0.72)">Events</div>' +
+                '<div style="margin-top:6px;font-size:20px;font-weight:700">' + eventCount + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="dashboard-total">' +
+              '<div class="row-between">' +
+                '<div>' +
+                  '<div class="tiny-label">Total</div>' +
+                  '<div class="dashboard-score"><strong class="display">' + score.total + '</strong></div>' +
+                '</div>' +
+                '<div style="text-align:right;font-size:11px;color:rgba(238,251,255,0.44);text-transform:uppercase;letter-spacing:0.22em">' +
+                  '<div>Self + World</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="bar-track"><div class="bar-fill bar-total" style="width:' + percent(score.total, 100) + '%"></div></div>' +
+            '</div>' +
+            '<div class="lane-grid">' +
+              renderLaneCard("self", "Self", score.self) +
+              renderLaneCard("world", "World", score.world) +
+            '</div>' +
+          '</section>';
+      }
+
+      function renderLaneCard(type, title, value) {
+        var lineColor = type === "self" ? "var(--cyan)" : "var(--blue)";
+        var pillClass = value >= 25 ? "lane-positive" : "lane-negative";
+        return '' +
+          '<div class="lane-card ' + type + '">' +
+            '<div class="row-between">' +
+              '<div>' +
+                '<h3 style="color:' + (type === "self" ? "rgba(0,240,255,0.8)" : "rgba(77,163,255,0.8)") + '">' + title + '</h3>' +
+                '<strong>' + value + '</strong>' +
+              '</div>' +
+              '<span class="lane-pill ' + pillClass + '">' + value + '/50</span>' +
+            '</div>' +
+            '<div class="bar-track"><div class="bar-fill" style="width:' + percent(value, 50) + '%;background:' + lineColor + ';box-shadow:0 0 18px ' + rgba(lineColor, 0.35) + '"></div></div>' +
+          '</div>';
+      }
+
+      function renderBackup() {
+        return '' +
+          '<section class="panel">' +
+            '<div class="panel-head">' +
+              '<div>' +
+                '<div class="eyebrow">Vault</div>' +
+                '<h2 class="display panel-title">Backup</h2>' +
+              '</div>' +
+              '<div class="counter-pill" style="text-align:right">' +
+                '<div class="tiny-label">Storage</div>' +
+                '<div style="margin-top:6px;font-size:14px;color:rgba(238,251,255,0.82)">Local</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="backup-grid">' +
+              '<button class="action-pill" data-action="export-backup" type="button">Export JSON</button>' +
+              '<button class="action-pill" data-action="import-backup" type="button" style="background:rgba(255,216,77,0.1);border-color:rgba(255,216,77,0.3);color:var(--yellow)">Import JSON</button>' +
+            '</div>' +
+            '<div class="metric-grid">' +
+              renderMetric("Events", state.events.length) +
+              renderMetric("Things", state.things.length) +
+              renderMetric("Ratings", state.ratings.length) +
+            '</div>' +
+          '</section>';
+      }
+
+      function renderMetric(label, value) {
+        return '' +
+          '<div class="metric-card">' +
+            '<div class="tiny-label">' + escapeHtml(label) + '</div>' +
+            '<span class="metric-value">' + value + '</span>' +
+          '</div>';
+      }
+
+      function renderTimeline(events) {
+        return '' +
+          '<section class="panel">' +
+            '<div class="panel-head">' +
+              '<div>' +
+                '<div class="eyebrow">' + escapeHtml(formatDayLabel(fromDayKey(ui.dayKey))) + '</div>' +
+                '<h2 class="display panel-title">Timeline</h2>' +
+              '</div>' +
+              '<button class="action-pill" data-action="open-event-create" type="button">Quick Add</button>' +
+            '</div>' +
+            '<div class="timeline">' +
+              (events.length ? events.map(renderEventEntry).join("") : renderEmpty("No events")) +
+            '</div>' +
+          '</section>';
+      }
+
+      function renderEventEntry(event) {
+        return '' +
+          '<article class="timeline-entry">' +
+            '<div style="display:flex;gap:12px">' +
+              '<div class="source-badge ' + (event.source === "self" ? "source-self" : "source-world") + '">' + (event.source === "self" ? "Self" : "World") + '</div>' +
+              '<div style="flex:1;min-width:0">' +
+                '<div class="timeline-entry-head">' +
+                  '<div style="min-width:0">' +
+                    '<h3 class="entry-title">' + escapeHtml(event.title) + '</h3>' +
+                    (event.note ? '<p class="entry-note">' + escapeHtml(event.note) + '</p>' : "") +
+                  '</div>' +
+                  renderPointsPill(event.points) +
+                '</div>' +
+                '<div class="tag-row">' +
+                  '<span class="tag">' + escapeHtml(formatTimelineTime(event.timestamp)) + '</span>' +
+                  event.tags.map(function (tag) {
+                    return '<span class="tag">#' + escapeHtml(tag) + '</span>';
+                  }).join("") +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="entry-actions">' +
+              '<button class="mini-action" data-action="open-event-edit" data-id="' + escapeHtml(event.id) + '" type="button">Edit</button>' +
+              '<button class="mini-action delete" data-action="delete-event" data-id="' + escapeHtml(event.id) + '" type="button">Delete</button>' +
+            '</div>' +
+          '</article>';
+      }
+
+      function renderThings(summaries, selectedThing) {
+        return '' +
+          '<section class="panel">' +
+            '<div class="panel-head">' +
+              '<div>' +
+                '<div class="eyebrow">Things</div>' +
+                '<h2 class="display panel-title">Things</h2>' +
+              '</div>' +
+              '<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">' +
+                '<button class="action-pill" data-action="open-thing-create" type="button" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(238,251,255,0.7)">New Thing</button>' +
+                '<button class="action-pill" data-action="open-rating-create" type="button">Add Rating</button>' +
+              '</div>' +
+            '</div>' +
+            (summaries.length ? renderThingArea(summaries, selectedThing) : renderEmpty("No things")) +
+          '</section>';
+      }
+
+      function renderThingArea(summaries, selectedThing) {
+        return '' +
+          '<div class="thing-strip">' +
+            summaries.map(function (summary) {
+              return renderThingTile(summary, selectedThing && summary.thing.id === selectedThing.thing.id);
+            }).join("") +
+          '</div>' +
+          (selectedThing ? renderThingDetail(selectedThing) : "");
+      }
+
+      function renderThingTile(summary, isActive) {
+        return '' +
+          '<button class="thing-tile' + (isActive ? ' active' : '') + '" data-action="select-thing" data-id="' + escapeHtml(summary.thing.id) + '" type="button">' +
+            '<div class="row-between">' +
+              '<div>' +
+                '<div class="thing-name">' + escapeHtml(summary.thing.name) + '</div>' +
+                '<div class="tiny-label" style="margin-top:6px">' + summary.ratings.length + ' logs</div>' +
+              '</div>' +
+              renderPointsPill(summary.latest ? summary.latest.points : 0, !summary.latest) +
+            '</div>' +
+            renderTrend(summary.ratings.slice().reverse()) +
+            '<div class="detail-meta" style="display:flex;justify-content:space-between;gap:10px;margin-top:10px;font-size:10px;color:rgba(238,251,255,0.44)">' +
+              '<span>Avg ' + summary.average.toFixed(1) + '</span>' +
+              '<span>' + escapeHtml(summary.latest ? formatDetailDate(summary.latest.timestamp) : "No data") + '</span>' +
+            '</div>' +
+          '</button>';
+      }
+
+      function renderThingDetail(summary) {
+        return '' +
+          '<div class="thing-detail">' +
+            '<div class="thing-detail-head">' +
+              '<div>' +
+                '<div class="eyebrow" style="color:rgba(199,255,58,0.76)">Thing</div>' +
+                '<h3 class="display panel-title" style="font-size:28px;margin-top:10px">' + escapeHtml(summary.thing.name) + '</h3>' +
+              '</div>' +
+              '<div class="thing-actions">' +
+                '<button class="mini-action" data-action="open-thing-edit" data-id="' + escapeHtml(summary.thing.id) + '" type="button">Edit</button>' +
+                '<button class="mini-action" data-action="open-rating-create" data-thing-id="' + escapeHtml(summary.thing.id) + '" type="button">Rate</button>' +
+                '<button class="mini-action delete" data-action="delete-thing" data-id="' + escapeHtml(summary.thing.id) + '" type="button">Delete</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="detail-grid">' +
+              '<div class="detail-card"><div class="tiny-label">Average</div><div class="metric-value">' + summary.average.toFixed(1) + '</div></div>' +
+              '<div class="detail-card"><div class="tiny-label">Logs</div><div class="metric-value">' + summary.ratings.length + '</div></div>' +
+            '</div>' +
+            '<div class="rating-list">' +
+              (summary.ratings.length ? summary.ratings.map(renderRatingEntry).join("") : renderEmpty("No ratings")) +
+            '</div>' +
+          '</div>';
+      }
+
+      function renderRatingEntry(rating) {
+        return '' +
+          '<article class="rating-entry">' +
+            '<div class="rating-entry-head">' +
+              '<div>' +
+                '<div class="tiny-label">' + escapeHtml(formatDetailDate(rating.timestamp)) + '</div>' +
+                '<p class="entry-note">' + escapeHtml(rating.note || "No note.") + '</p>' +
+              '</div>' +
+              renderPointsPill(rating.points) +
+            '</div>' +
+            '<div class="entry-actions">' +
+              '<button class="mini-action" data-action="open-rating-edit" data-id="' + escapeHtml(rating.id) + '" type="button">Edit</button>' +
+              '<button class="mini-action delete" data-action="delete-rating" data-id="' + escapeHtml(rating.id) + '" type="button">Delete</button>' +
+            '</div>' +
+          '</article>';
+      }
+
+      function renderFloatingBar() {
+        return '' +
+          '<div class="floating-bar">' +
+            '<div class="floating-shell">' +
+              '<button class="quick-add" data-action="open-event-create" type="button">' +
+                '<strong>+ Quick Add</strong>' +
+              '</button>' +
+              '<button class="quick-pill" data-action="open-thing-create" type="button">Thing</button>' +
+              '<button class="quick-pill" data-action="open-rating-create" type="button">Rate</button>' +
+            '</div>' +
+          '</div>';
+      }
+
+      function renderEmpty(title, copy) {
+        return '' +
+          '<div class="empty-state">' +
+            '<div class="tiny-label">' + escapeHtml(title) + '</div>' +
+            (copy ? '<p class="empty-copy">' + escapeHtml(copy) + '</p>' : '') +
+          '</div>';
+      }
+
+      function renderPointsPill(points, neutral) {
+        if (neutral) {
+          return '<span class="score-pill score-positive">0</span>';
+        }
+        var positive = points >= 0;
+        return '<span class="score-pill ' + (positive ? 'score-positive' : 'score-negative') + '">' + (points > 0 ? '+' : '') + points + '</span>';
+      }
+
+      function renderTrend(ratingsAscending) {
+        if (!ratingsAscending.length) {
+          return '<div class="thing-chart-empty">No data</div>';
+        }
+
+        var values = ratingsAscending.map(function (entry) { return entry.points; });
+        if (values.length === 1) {
+          values = [values[0], values[0]];
+        }
+
+        var width = 280;
+        var height = 112;
+        var pad = 12;
+        var min = Math.min.apply(null, values.concat([0]));
+        var max = Math.max.apply(null, values.concat([0]));
+        var range = max - min || 1;
+        var innerWidth = width - pad * 2;
+        var innerHeight = height - pad * 2;
+        var zeroY = pad + innerHeight - ((0 - min) / range) * innerHeight;
+
+        var path = values.map(function (value, index) {
+          var x = pad + (innerWidth / (values.length - 1)) * index;
+          var y = pad + innerHeight - ((value - min) / range) * innerHeight;
+          return (index === 0 ? "M " : "L ") + x.toFixed(2) + " " + y.toFixed(2);
+        }).join(" ");
+
+        var dots = values.map(function (value, index) {
+          var x = pad + (innerWidth / (values.length - 1)) * index;
+          var y = pad + innerHeight - ((value - min) / range) * innerHeight;
+          return '<circle cx="' + x.toFixed(2) + '" cy="' + y.toFixed(2) + '" r="4" fill="#05010e" stroke="#c7ff3a" stroke-width="2"></circle>';
+        }).join("");
+
+        return '' +
+          '<svg class="thing-chart" viewBox="0 0 ' + width + ' ' + height + '" aria-hidden="true">' +
+            '<defs>' +
+              '<linearGradient id="trend-line" x1="0%" x2="100%">' +
+                '<stop offset="0%" stop-color="#00f0ff"></stop>' +
+                '<stop offset="100%" stop-color="#4da3ff"></stop>' +
+              '</linearGradient>' +
+            '</defs>' +
+            '<line x1="' + pad + '" x2="' + (width - pad) + '" y1="' + zeroY.toFixed(2) + '" y2="' + zeroY.toFixed(2) + '" stroke="rgba(255,255,255,0.12)" stroke-dasharray="4 4"></line>' +
+            '<path d="' + path + '" fill="none" stroke="url(#trend-line)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>' +
+            dots +
+          '</svg>';
+      }
+
+      function renderModal() {
+        if (!ui.modal) {
+          sheetBackdrop.className = "sheet-backdrop";
+          sheetBackdrop.setAttribute("aria-hidden", "true");
+          sheetBackdrop.innerHTML = "";
+          return;
+        }
+
+        var modal = ui.modal;
+        var body = "";
+        if (modal.type === "event") {
+          body = renderEventForm(modal);
+        } else if (modal.type === "thing") {
+          body = renderThingForm(modal);
+        } else if (modal.type === "rating") {
+          body = renderRatingForm(modal);
+        } else if (modal.type === "day") {
+          body = renderDayForm();
+        }
+
+        sheetBackdrop.className = "sheet-backdrop open";
+        sheetBackdrop.setAttribute("aria-hidden", "false");
+        sheetBackdrop.innerHTML =
+          '<div class="sheet" role="dialog" aria-modal="true">' +
+            '<div class="sheet-handle"></div>' +
+            body +
+          '</div>';
+      }
+
+      function renderEventForm(modal) {
+        var event = modal.id ? findById(state.events, modal.id) : null;
+        var source = event ? event.source : "self";
+        var sign = event && event.points < 0 ? "minus" : "plus";
+        var amount = event ? Math.abs(event.points) : "";
+        return '' +
+          '<div class="sheet-header">' +
+            '<div>' +
+              '<div class="eyebrow" style="color:rgba(255,216,77,0.78)">' + (event ? 'Edit' : 'New') + '</div>' +
+              '<h2 class="display sheet-title">' + (event ? 'Edit Event' : 'Log Event') + '</h2>' +
+            '</div>' +
+            '<button class="sheet-close" data-action="close-modal" type="button">Close</button>' +
+          '</div>' +
+          '<form class="form-grid" data-form="event">' +
+            (event ? '<input type="hidden" name="id" value="' + escapeAttribute(event.id) + '">' : "") +
+            renderField("Title", '<input name="title" placeholder="Finished morning pages" value="' + escapeAttribute(event ? event.title : "") + '" required>') +
+            '<div class="field-row">' +
+              renderField("Points", renderSignedPointsControl(sign, amount, "10")) +
+              renderField("Time", '<input name="timestamp" type="datetime-local" value="' + escapeAttribute(event ? formatInputDateTime(event.timestamp) : defaultFormDateTime()) + '" required>') +
+            '</div>' +
+            renderField(
+              "Source",
+              '<div class="segment-row">' +
+                '<button class="segment-button ' + (source === "self" ? 'active-self' : '') + '" type="button" data-action="set-source" data-source="self">Self</button>' +
+                '<button class="segment-button ' + (source === "outside" ? 'active-world' : '') + '" type="button" data-action="set-source" data-source="outside">World</button>' +
+              '</div>' +
+              '<input type="hidden" name="source" value="' + escapeAttribute(source) + '">'
+            ) +
+            renderField("Tags", '<input name="tags" placeholder="writing, body, transit" value="' + escapeAttribute(event ? event.tags.join(", ") : "") + '">') +
+            renderField("Note", '<textarea name="note" placeholder="Note">' + escapeHtml(event ? event.note : "") + '</textarea>') +
+            '<button class="primary-submit" type="submit">Save Event</button>' +
+          '</form>';
+      }
+
+      function renderThingForm(modal) {
+        var thing = modal.id ? findById(state.things, modal.id) : null;
+        return '' +
+          '<div class="sheet-header">' +
+            '<div>' +
+              '<div class="eyebrow" style="color:rgba(199,255,58,0.78)">' + (thing ? 'Edit' : 'New') + '</div>' +
+              '<h2 class="display sheet-title">' + (thing ? 'Edit Thing' : 'Create Thing') + '</h2>' +
+            '</div>' +
+            '<button class="sheet-close" data-action="close-modal" type="button">Close</button>' +
+          '</div>' +
+          '<form class="form-grid" data-form="thing">' +
+            (thing ? '<input type="hidden" name="id" value="' + escapeAttribute(thing.id) + '">' : "") +
+            renderField("Name", '<input name="name" placeholder="Morning Pages" value="' + escapeAttribute(thing ? thing.name : "") + '" required>') +
+            '<button class="primary-submit lime" type="submit">' + (thing ? 'Update Thing' : 'Save Thing') + '</button>' +
+          '</form>';
+      }
+
+      function renderRatingForm(modal) {
+        var rating = modal.id ? findById(state.ratings, modal.id) : null;
+        var currentThingId = modal.thingId || (rating ? rating.thingId : ui.selectedThingId || (state.things[0] && state.things[0].id) || "");
+        var sign = rating && rating.points < 0 ? "minus" : "plus";
+        var amount = rating ? Math.abs(rating.points) : "";
+        return '' +
+          '<div class="sheet-header">' +
+            '<div>' +
+              '<div class="eyebrow" style="color:rgba(77,163,255,0.78)">' + (rating ? 'Edit' : 'New') + '</div>' +
+              '<h2 class="display sheet-title">' + (rating ? 'Edit Thing Rating' : 'Rate Thing') + '</h2>' +
+            '</div>' +
+            '<button class="sheet-close" data-action="close-modal" type="button">Close</button>' +
+          '</div>' +
+          '<form class="form-grid" data-form="rating">' +
+            (rating ? '<input type="hidden" name="id" value="' + escapeAttribute(rating.id) + '">' : "") +
+            renderField(
+              "Thing",
+              '<select name="thingId" required>' +
+                '<option value="">Choose a thing</option>' +
+                state.things.map(function (thing) {
+                  return '<option value="' + escapeAttribute(thing.id) + '"' + (thing.id === currentThingId ? ' selected' : '') + '>' + escapeHtml(thing.name) + '</option>';
+                }).join("") +
+              '</select>'
+            ) +
+            '<div class="field-row">' +
+              renderField("Points", renderSignedPointsControl(sign, amount, "16")) +
+              renderField("Time", '<input name="timestamp" type="datetime-local" value="' + escapeAttribute(rating ? formatInputDateTime(rating.timestamp) : defaultFormDateTime()) + '" required>') +
+            '</div>' +
+            renderField("Note", '<textarea name="note" placeholder="Note">' + escapeHtml(rating ? rating.note : "") + '</textarea>') +
+            '<button class="primary-submit magenta" type="submit">Save Rating</button>' +
+          '</form>';
+      }
+
+      function renderDayForm() {
+        return '' +
+          '<div class="sheet-header">' +
+            '<div>' +
+              '<div class="eyebrow" style="color:rgba(255,216,77,0.78)">Day</div>' +
+              '<h2 class="display sheet-title">Choose Date</h2>' +
+            '</div>' +
+            '<button class="sheet-close" data-action="close-modal" type="button">Close</button>' +
+          '</div>' +
+          '<form class="form-grid" data-form="day">' +
+            renderField("Date", '<input name="day" type="date" value="' + escapeAttribute(ui.dayKey) + '" required>') +
+            '<div class="field-row">' +
+              '<button class="primary-submit" type="button" data-action="set-day-today" style="border-color:rgba(255,216,77,0.34);background:rgba(255,216,77,0.1)">Today</button>' +
+              '<button class="primary-submit" type="submit">Open</button>' +
+            '</div>' +
+          '</form>';
+      }
+
+      function renderSignedPointsControl(sign, amount, placeholder) {
+        return '' +
+          '<div class="point-row">' +
+            '<div class="sign-row">' +
+              '<button class="sign-button ' + (sign === "plus" ? 'active-plus' : '') + '" type="button" data-action="set-sign" data-sign="plus">+</button>' +
+              '<button class="sign-button ' + (sign === "minus" ? 'active-minus' : '') + '" type="button" data-action="set-sign" data-sign="minus">-</button>' +
+            '</div>' +
+            '<div>' +
+              '<input type="hidden" name="sign" value="' + escapeAttribute(sign) + '">' +
+              '<input name="points" type="number" min="1" step="1" inputmode="numeric" placeholder="' + escapeAttribute(placeholder) + '" value="' + escapeAttribute(amount ? String(amount) : "") + '" required>' +
+            '</div>' +
+          '</div>';
+      }
+
+      function renderField(label, control) {
+        return '<label><span class="field-label">' + escapeHtml(label) + '</span>' + control + '</label>';
+      }
+
+      function handleClick(event) {
+        var target = event.target.closest("[data-action]");
+
+        if (sheetBackdrop.classList.contains("open") && event.target === sheetBackdrop) {
+          closeModal();
+          return;
+        }
+
+        if (!target) {
+          return;
+        }
+
+        var action = target.getAttribute("data-action");
+
+        if (action === "open-event-create") {
+          ui.modal = { type: "event" };
+        } else if (action === "open-event-edit") {
+          ui.modal = { type: "event", id: target.getAttribute("data-id") };
+        } else if (action === "open-day-picker") {
+          ui.modal = { type: "day" };
+        } else if (action === "delete-event") {
+          deleteEvent(target.getAttribute("data-id"));
+        } else if (action === "open-thing-create") {
+          ui.modal = { type: "thing" };
+        } else if (action === "open-thing-edit") {
+          ui.modal = { type: "thing", id: target.getAttribute("data-id") };
+        } else if (action === "delete-thing") {
+          deleteThing(target.getAttribute("data-id"));
+        } else if (action === "select-thing") {
+          ui.selectedThingId = target.getAttribute("data-id");
+        } else if (action === "open-rating-create") {
+          if (!state.things.length) {
+            ui.modal = { type: "thing" };
+            setNotice("error", "Create a thing first.");
+            render();
+            return;
+          }
+          ui.modal = { type: "rating", thingId: target.getAttribute("data-thing-id") || ui.selectedThingId };
+        } else if (action === "open-rating-edit") {
+          ui.modal = { type: "rating", id: target.getAttribute("data-id") };
+        } else if (action === "delete-rating") {
+          deleteRating(target.getAttribute("data-id"));
+        } else if (action === "close-modal") {
+          closeModal();
+        } else if (action === "set-source") {
+          var form = target.closest("form");
+          var sourceInput = form && form.querySelector('input[name="source"]');
+          if (sourceInput) {
+            sourceInput.value = target.getAttribute("data-source");
+            Array.prototype.forEach.call(
+              form.querySelectorAll('[data-action="set-source"]'),
+              function (button) {
+                button.classList.remove("active-self", "active-world");
+                if (button.getAttribute("data-source") === sourceInput.value) {
+                  button.classList.add(sourceInput.value === "self" ? "active-self" : "active-world");
+                }
+              }
+            );
+          }
+          return;
+        } else if (action === "set-sign") {
+          var signForm = target.closest("form");
+          var signInput = signForm && signForm.querySelector('input[name="sign"]');
+          if (signInput) {
+            signInput.value = target.getAttribute("data-sign");
+            Array.prototype.forEach.call(
+              signForm.querySelectorAll('[data-action="set-sign"]'),
+              function (button) {
+                button.classList.remove("active-plus", "active-minus");
+                if (button.getAttribute("data-sign") === signInput.value) {
+                  button.classList.add(signInput.value === "plus" ? "active-plus" : "active-minus");
+                }
+              }
+            );
+          }
+          return;
+        } else if (action === "set-day-today") {
+          ui.dayKey = toDayKey(new Date());
+          closeModal();
+          return;
+        } else if (action === "export-backup") {
+          exportBackup();
+        } else if (action === "import-backup") {
+          importInput.click();
+          return;
+        }
+
+        render();
+      }
+
+      function handleSubmit(event) {
+        var form = event.target;
+        if (!form.matches("[data-form]")) {
+          return;
+        }
+
+        event.preventDefault();
+        var formType = form.getAttribute("data-form");
+        var data = new FormData(form);
+
+        if (formType === "event") {
+          saveEventFromForm(data);
+        } else if (formType === "thing") {
+          saveThingFromForm(data);
+        } else if (formType === "rating") {
+          saveRatingFromForm(data);
+        } else if (formType === "day") {
+          saveDayFromForm(data);
+        }
+
+        render();
+      }
+
+      function handleChange(event) {
+        if (event.target === importInput) {
+          importBackup(event.target.files && event.target.files[0]);
+        }
+      }
+
+      function saveEventFromForm(formData) {
+        var id = toText(formData.get("id"));
+        var title = toText(formData.get("title")).trim();
+        var amount = Number(formData.get("points"));
+        var sign = toText(formData.get("sign")) === "minus" ? -1 : 1;
+        var points = amount * sign;
+        var source = toText(formData.get("source")) === "outside" ? "outside" : "self";
+        var note = toText(formData.get("note")).trim();
+        var timestamp = toIsoFromInput(toText(formData.get("timestamp")));
+        var tags = toText(formData.get("tags"))
+          .split(",")
+          .map(function (tag) { return tag.trim(); })
+          .filter(Boolean)
+          .filter(function (tag, index, all) { return all.indexOf(tag) === index; });
+
+        if (!title || !Number.isFinite(amount) || amount <= 0 || !timestamp) {
+          setNotice("error", "Need title, points, time.");
+          return;
+        }
+
+        var payload = {
+          id: id || createId("event"),
+          title: title,
+          points: points,
+          source: source,
+          note: note,
+          timestamp: timestamp,
+          tags: tags
+        };
+
+        if (id) {
+          state.events = state.events.map(function (entry) {
+            return entry.id === id ? payload : entry;
+          });
+          setNotice("success", "Event saved.");
+        } else {
+          state.events.push(payload);
+          setNotice("success", "Event added.");
+        }
+
+        saveState();
+        closeModal(false);
+      }
+
+      function saveThingFromForm(formData) {
+        var id = toText(formData.get("id"));
+        var name = toText(formData.get("name")).trim();
+
+        if (!name) {
+          setNotice("error", "Need a name.");
+          return;
+        }
+
+        var exists = state.things.some(function (thing) {
+          return thing.id !== id && thing.name.trim().toLowerCase() === name.toLowerCase();
+        });
+
+        if (exists) {
+          setNotice("error", "Name already exists.");
+          return;
+        }
+
+        if (id) {
+          state.things = state.things.map(function (thing) {
+            return thing.id === id ? { id: thing.id, name: name, createdAt: thing.createdAt } : thing;
+          });
+          ui.selectedThingId = id;
+          setNotice("success", "Thing saved.");
+        } else {
+          var newThing = {
+            id: createId("thing"),
+            name: name,
+            createdAt: new Date().toISOString()
+          };
+          state.things.push(newThing);
+          ui.selectedThingId = newThing.id;
+          setNotice("success", "Thing added.");
+        }
+
+        saveState();
+        closeModal(false);
+      }
+
+      function saveRatingFromForm(formData) {
+        var id = toText(formData.get("id"));
+        var thingId = toText(formData.get("thingId"));
+        var amount = Number(formData.get("points"));
+        var sign = toText(formData.get("sign")) === "minus" ? -1 : 1;
+        var points = amount * sign;
+        var note = toText(formData.get("note")).trim();
+        var timestamp = toIsoFromInput(toText(formData.get("timestamp")));
+
+        if (!thingId || !findById(state.things, thingId)) {
+          setNotice("error", "Pick a thing.");
+          return;
+        }
+
+        if (!Number.isFinite(amount) || amount <= 0 || !timestamp) {
+          setNotice("error", "Need points and time.");
+          return;
+        }
+
+        var payload = {
+          id: id || createId("rating"),
+          thingId: thingId,
+          points: points,
+          note: note,
+          timestamp: timestamp
+        };
+
+        if (id) {
+          state.ratings = state.ratings.map(function (entry) {
+            return entry.id === id ? payload : entry;
+          });
+          setNotice("success", "Rating saved.");
+        } else {
+          state.ratings.push(payload);
+          setNotice("success", "Rating added.");
+        }
+
+        ui.selectedThingId = thingId;
+        saveState();
+        closeModal(false);
+      }
+
+      function saveDayFromForm(formData) {
+        var day = toText(formData.get("day"));
+        if (!day) {
+          setNotice("error", "Pick a date.");
+          return;
+        }
+        ui.dayKey = day;
+        closeModal(false);
+      }
+
+      function deleteEvent(id) {
+        var event = findById(state.events, id);
+        if (!event) {
+          return;
+        }
+        if (!window.confirm("Delete this event?")) {
+          return;
+        }
+        state.events = state.events.filter(function (entry) { return entry.id !== id; });
+        saveState();
+        setNotice("success", "Event deleted.");
+      }
+
+      function deleteThing(id) {
+        var thing = findById(state.things, id);
+        if (!thing) {
+          return;
+        }
+        var ratingCount = state.ratings.filter(function (entry) { return entry.thingId === id; }).length;
+        var prompt = ratingCount
+          ? 'Delete "' + thing.name + '" and its ' + ratingCount + ' ratings?'
+          : 'Delete "' + thing.name + '"?';
+        if (!window.confirm(prompt)) {
+          return;
+        }
+        state.things = state.things.filter(function (entry) { return entry.id !== id; });
+        state.ratings = state.ratings.filter(function (entry) { return entry.thingId !== id; });
+        if (ui.selectedThingId === id) {
+          ui.selectedThingId = state.things[0] ? state.things[0].id : null;
+        }
+        saveState();
+        setNotice("success", "Thing deleted.");
+      }
+
+      function deleteRating(id) {
+        var rating = findById(state.ratings, id);
+        if (!rating) {
+          return;
+        }
+        if (!window.confirm("Delete this rating?")) {
+          return;
+        }
+        state.ratings = state.ratings.filter(function (entry) { return entry.id !== id; });
+        saveState();
+        setNotice("success", "Rating deleted.");
+      }
+
+      function exportBackup() {
+        var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = "sibyl-backup-" + toDayKey(new Date()) + ".json";
+        link.click();
+        URL.revokeObjectURL(url);
+        setNotice("success", "Backup exported.");
+        render();
+      }
+
+      function importBackup(file) {
+        importInput.value = "";
+        if (!file) {
+          return;
+        }
+        if (!window.confirm("Importing a backup will replace the current local Sibyl data on this device.")) {
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function () {
+          try {
+            var parsed = JSON.parse(String(reader.result || ""));
+            if (!isValidState(parsed)) {
+              throw new Error("Invalid Sibyl backup");
+            }
+            state = parsed;
+            ui.selectedThingId = state.things[0] ? state.things[0].id : null;
+            saveState();
+            setNotice("success", "Backup imported.");
+          } catch (error) {
+            console.error(error);
+            setNotice("error", "Import failed.");
+          }
+          render();
+        };
+        reader.readAsText(file);
+      }
+
+      function buildThingSummaries() {
+        return state.things.map(function (thing) {
+          var ratings = state.ratings
+            .filter(function (entry) { return entry.thingId === thing.id; })
+            .sort(function (a, b) { return b.timestamp.localeCompare(a.timestamp); });
+          var total = ratings.reduce(function (sum, entry) { return sum + entry.points; }, 0);
+          return {
+            thing: thing,
+            ratings: ratings,
+            latest: ratings[0] || null,
+            average: ratings.length ? total / ratings.length : 0
+          };
+        });
+      }
+
+      function ensureSelectedThing() {
+        if (!ui.selectedThingId || !findById(state.things, ui.selectedThingId)) {
+          ui.selectedThingId = state.things[0] ? state.things[0].id : null;
+        }
+      }
+
+      function closeModal(renderAfter) {
+        ui.modal = null;
+        if (renderAfter !== false) {
+          render();
+        }
+      }
+
+      function setNotice(tone, text) {
+        ui.notice = { tone: tone, text: text };
+        window.clearTimeout(setNotice._timer);
+        setNotice._timer = window.setTimeout(function () {
+          ui.notice = null;
+          render();
+        }, 3600);
+      }
+
+      function createId(prefix) {
+        return prefix + "-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
+      }
+
+      function makeIso(dayOffset, hour, minute) {
+        var date = new Date();
+        date.setDate(date.getDate() + dayOffset);
+        date.setHours(hour, minute, 0, 0);
+        return date.toISOString();
+      }
+
+      function toDayKey(input) {
+        var date = input instanceof Date ? input : new Date(input);
+        return [
+          date.getFullYear(),
+          String(date.getMonth() + 1).padStart(2, "0"),
+          String(date.getDate()).padStart(2, "0")
+        ].join("-");
+      }
+
+      function formatDayLabel(input) {
+        return new Intl.DateTimeFormat("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric"
+        }).format(input instanceof Date ? input : new Date(input));
+      }
+
+      function fromDayKey(dayKey) {
+        var parts = dayKey.split("-").map(Number);
+        return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0, 0);
+      }
+
+      function formatTimelineTime(input) {
+        return new Intl.DateTimeFormat("en-US", {
+          hour: "numeric",
+          minute: "2-digit"
+        }).format(new Date(input));
+      }
+
+      function formatDetailDate(input) {
+        return new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        }).format(new Date(input));
+      }
+
+      function formatInputDateTime(input) {
+        var date = input instanceof Date ? input : new Date(input);
+        return [
+          date.getFullYear(),
+          String(date.getMonth() + 1).padStart(2, "0"),
+          String(date.getDate()).padStart(2, "0")
+        ].join("-") + "T" + [
+          String(date.getHours()).padStart(2, "0"),
+          String(date.getMinutes()).padStart(2, "0")
+        ].join(":");
+      }
+
+      function defaultFormDateTime() {
+        var todayKey = toDayKey(new Date());
+        if (ui.dayKey === todayKey) {
+          return formatInputDateTime(new Date());
+        }
+        return ui.dayKey + "T12:00";
+      }
+
+      function toIsoFromInput(value) {
+        if (!value) {
+          return "";
+        }
+        var date = new Date(value);
+        return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+      }
+
+      function findById(list, id) {
+        return list.find(function (item) { return item.id === id; }) || null;
+      }
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function percent(value, max) {
+        return clamp((value / max) * 100, 0, 100).toFixed(1);
+      }
+
+      function toText(value) {
+        return value == null ? "" : String(value);
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function escapeAttribute(value) {
+        return escapeHtml(value).replace(/`/g, "&#96;");
+      }
+
+      function rgba(color, alpha) {
+        if (color === "var(--cyan)") {
+          return "rgba(0,240,255," + alpha + ")";
+        }
+        if (color === "var(--blue)") {
+          return "rgba(77,163,255," + alpha + ")";
+        }
+        return "rgba(148,255,59," + alpha + ")";
+      }
+    })();
+  </script>
+</body>
+</html>
