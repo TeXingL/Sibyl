@@ -1,0 +1,2254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#00f0ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sibyl">
+  <title>Sibyl</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20180%20180'%3E%0A%20%20%3Crect%20width%3D'180'%20height%3D'180'%20rx%3D'40'%20fill%3D'%2302060b'%2F%3E%0A%20%20%3Cpath%20d%3D'M138%2034H62L42%2054v24l18%2018h56v12H42v38h76l20-20V102l-18-18H64V72h74z'%20fill%3D'%2300f0ff'%2F%3E%0A%20%20%3Cpath%20d%3D'M114%2048H72l-8%208h50zM112%20120H60l-8%208h52z'%20fill%3D'%2302060b'%2F%3E%0A%3C%2Fsvg%3E">
+  <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20180%20180'%3E%0A%20%20%3Crect%20width%3D'180'%20height%3D'180'%20rx%3D'40'%20fill%3D'%2302060b'%2F%3E%0A%20%20%3Cpath%20d%3D'M138%2034H62L42%2054v24l18%2018h56v12H42v38h76l20-20V102l-18-18H64V72h74z'%20fill%3D'%2300f0ff'%2F%3E%0A%20%20%3Cpath%20d%3D'M114%2048H72l-8%208h50zM112%20120H60l-8%208h52z'%20fill%3D'%2302060b'%2F%3E%0A%3C%2Fsvg%3E">
+  <link rel="apple-touch-icon-precomposed" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20180%20180'%3E%0A%20%20%3Crect%20width%3D'180'%20height%3D'180'%20rx%3D'40'%20fill%3D'%2302060b'%2F%3E%0A%20%20%3Cpath%20d%3D'M138%2034H62L42%2054v24l18%2018h56v12H42v38h76l20-20V102l-18-18H64V72h74z'%20fill%3D'%2300f0ff'%2F%3E%0A%20%20%3Cpath%20d%3D'M114%2048H72l-8%208h50zM112%20120H60l-8%208h52z'%20fill%3D'%2302060b'%2F%3E%0A%3C%2Fsvg%3E">
+  <style>
+    :root {
+      --bg-0: #05010e;
+      --bg-1: #0d0317;
+      --panel: rgba(8, 4, 14, 0.94);
+      --panel-strong: rgba(4, 2, 9, 0.98);
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #eefbff;
+      --muted: rgba(238, 251, 255, 0.68);
+      --muted-soft: rgba(238, 251, 255, 0.44);
+      --cyan: #00f0ff;
+      --self: #38e8c8;
+      --blue: #4da3ff;
+      --lime: #94ff3b;
+      --yellow: #ffd84d;
+      --red: #ff5b5b;
+      --shadow-cyan: 0 0 0 1px rgba(0, 240, 255, 0.24), inset 0 0 0 1px rgba(0, 240, 255, 0.06);
+      --shadow-blue: 0 0 0 1px rgba(77, 163, 255, 0.24), inset 0 0 0 1px rgba(77, 163, 255, 0.06);
+      --font-ui: ui-monospace, "SFMono-Regular", Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Courier New", monospace;
+      --font-display: "Courier New", "Lucida Console", Monaco, ui-monospace, monospace;
+      --radius-xl: 16px;
+      --radius-lg: 12px;
+      --radius-md: 10px;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg-0);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-weight: 400;
+      font-variant-ligatures: none;
+      text-rendering: optimizeSpeed;
+    }
+
+    body {
+      background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      inset: 0;
+      pointer-events: none;
+      position: fixed;
+      z-index: 0;
+    }
+
+    body::before {
+      background-image:
+        linear-gradient(rgba(0, 240, 255, 0.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.14) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.22;
+    }
+
+    body::after {
+      background:
+        repeating-linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.03) 0,
+          rgba(255, 255, 255, 0.03) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      opacity: 0.24;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+      color: inherit;
+      min-width: 0;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      background: none;
+      padding: 0;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      background: rgba(3, 2, 8, 0.96);
+      padding: 13px 14px;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(238, 251, 255, 0.3);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(0, 240, 255, 0.78);
+      box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.9);
+      background: rgba(6, 4, 12, 1);
+    }
+
+    textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    .app-shell {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: calc(34px + env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom));
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 58px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      flex-shrink: 0;
+      display: block;
+      box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.34), 0 0 18px rgba(0, 240, 255, 0.16);
+    }
+
+    .glow-orb {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(26px);
+      pointer-events: none;
+      opacity: 0.34;
+    }
+
+    .orb-cyan {
+      inset: 28px 32px auto 24px;
+      height: 120px;
+      background: rgba(0, 240, 255, 0.12);
+    }
+
+    .orb-magenta {
+      right: 8px;
+      top: 154px;
+      width: 108px;
+      height: 108px;
+      background: rgba(255, 216, 77, 0.14);
+    }
+
+    .eyebrow,
+    .tiny-label,
+    .segment,
+    .chip,
+    .stat-label,
+    .detail-meta,
+    .floating-caption {
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+
+    .display {
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-variant-ligatures: none;
+      text-rendering: optimizeSpeed;
+      -webkit-font-smoothing: none;
+      font-smooth: never;
+    }
+
+    .eyebrow,
+    .tiny-label,
+    .field-label,
+    .action-pill,
+    .quick-pill,
+    .sheet-close,
+    .segment-button,
+    .primary-submit,
+    .sign-button,
+    .source-badge,
+    .tag,
+    .mini-action {
+      font-family: var(--font-display);
+      font-variant-ligatures: none;
+      text-rendering: optimizeSpeed;
+      -webkit-font-smoothing: none;
+      font-smooth: never;
+      font-weight: 800;
+    }
+
+    .hero-title {
+      font-size: 40px;
+      line-height: 0.96;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .hero-copy {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+      margin: 14px 0 0;
+      max-width: 25rem;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      color: rgba(0, 240, 255, 0.8);
+    }
+
+    .tiny-label {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      color: rgba(238, 251, 255, 0.62);
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 18px;
+      margin-top: 14px;
+      background: var(--panel);
+      backdrop-filter: none;
+      box-shadow: var(--shadow-cyan);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 1px;
+      background: rgba(0, 240, 255, 0.78);
+      opacity: 0.92;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .panel-title {
+      margin: 6px 0 0;
+      font-size: 24px;
+      line-height: 1;
+      overflow-wrap: anywhere;
+    }
+
+    .counter-pill,
+    .action-pill,
+    .score-pill,
+    .mini-action,
+    .tag,
+    .notice,
+    .detail-card,
+    .lane-pill {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .counter-pill,
+    .action-pill {
+      padding: 10px 12px;
+      background: rgba(3, 2, 8, 0.94);
+      border-radius: 10px;
+    }
+
+    .action-pill {
+      background: rgba(3, 10, 14, 0.96);
+      border-color: rgba(0, 240, 255, 0.46);
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .dashboard-total {
+      border-radius: 12px;
+      padding: 16px;
+      background: rgba(3, 2, 8, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .dashboard-score {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .dashboard-score strong {
+      font-size: 68px;
+      line-height: 0.9;
+    }
+
+    .bar-track {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    .bar-total {
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      box-shadow: 0 0 22px rgba(0, 240, 255, 0.32);
+    }
+
+    .lane-grid,
+    .backup-grid,
+    .metric-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .lane-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lane-card {
+      border-radius: 12px;
+      padding: 14px;
+      background: rgba(3, 2, 8, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .lane-card.self {
+      box-shadow: 0 0 0 1px rgba(56, 232, 200, 0.24), inset 0 0 0 1px rgba(56, 232, 200, 0.06);
+      border-color: rgba(56, 232, 200, 0.34);
+    }
+
+    .lane-card.world {
+      box-shadow: var(--shadow-blue);
+      border-color: rgba(77, 163, 255, 0.24);
+    }
+
+    .lane-card h3 {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .lane-card strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .lane-card p,
+    .helper-copy,
+    .backup-copy,
+    .empty-copy,
+    .entry-note,
+    .detail-copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .helper-copy {
+      margin: 14px 0 0;
+      color: rgba(238, 251, 255, 0.5);
+    }
+
+    .backup-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .metric-card,
+    .detail-card {
+      border-radius: 10px;
+      padding: 12px;
+      background: rgba(5, 4, 12, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      text-align: center;
+    }
+
+    .metric-value {
+      display: block;
+      margin-top: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-entry,
+    .thing-detail,
+    .rating-entry,
+    .empty-state {
+      border-radius: 12px;
+      background: rgba(3, 2, 8, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .timeline-entry-head,
+    .thing-detail-head,
+    .rating-entry-head,
+    .row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .timeline-row,
+    .timeline-main,
+    .timeline-copy {
+      min-width: 0;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .timeline-entry-head,
+    .rating-entry-head,
+    .thing-detail-head {
+      flex-wrap: wrap;
+    }
+
+    .thing-detail-head {
+      display: block;
+    }
+
+    .timeline-entry-head,
+    .rating-entry-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+    }
+
+    .timeline-copy {
+      flex: 1;
+    }
+
+    .source-badge {
+      min-width: 58px;
+      min-height: 30px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      line-height: 1.4;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .source-self {
+      color: var(--self);
+      background: rgba(56, 232, 200, 0.1);
+      border: 1px solid rgba(56, 232, 200, 0.3);
+    }
+
+    .source-world {
+      color: var(--blue);
+      background: rgba(77, 163, 255, 0.1);
+      border: 1px solid rgba(77, 163, 255, 0.3);
+    }
+
+    .entry-title,
+    .thing-name {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.35;
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      overflow-wrap: anywhere;
+    }
+
+    .entry-note {
+      margin: 8px 0 0;
+      overflow-wrap: anywhere;
+    }
+
+    .score-pill,
+    .lane-pill {
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      flex-shrink: 0;
+      align-self: flex-start;
+      border-radius: 8px;
+    }
+
+    .timeline-entry-head .score-pill,
+    .rating-entry-head .score-pill {
+      margin-left: auto;
+      justify-self: end;
+    }
+
+    .score-positive,
+    .lane-positive {
+      color: var(--lime);
+      background: rgba(199, 255, 58, 0.1);
+      border-color: rgba(199, 255, 58, 0.3);
+    }
+
+    .score-negative,
+    .lane-negative {
+      color: var(--red);
+      background: rgba(255, 91, 91, 0.1);
+      border-color: rgba(255, 91, 91, 0.3);
+    }
+
+    .score-neutral,
+    .lane-neutral {
+      color: var(--yellow);
+      background: rgba(255, 216, 77, 0.1);
+      border-color: rgba(255, 216, 77, 0.3);
+    }
+
+    .tag-row,
+    .entry-actions,
+    .thing-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .timeline-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .entry-actions,
+    .thing-actions {
+      justify-content: flex-end;
+    }
+
+    .thing-actions {
+      margin-top: 14px;
+    }
+
+    .tag,
+    .mini-action {
+      padding: 7px 9px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(6, 5, 12, 0.98);
+      color: rgba(238, 251, 255, 0.8);
+      overflow-wrap: anywhere;
+      border-radius: 8px;
+    }
+
+    .timeline-tag {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(238, 251, 255, 0.76);
+      font-family: var(--font-display);
+      font-weight: 800;
+    }
+
+    .timeline-time {
+      margin-bottom: 8px;
+      color: rgba(238, 251, 255, 0.62);
+    }
+
+    .mini-action {
+      transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+    }
+
+    .mini-action:hover {
+      border-color: rgba(0, 240, 255, 0.35);
+      color: var(--cyan);
+    }
+
+    .mini-action.delete:hover {
+      border-color: rgba(255, 91, 91, 0.35);
+      color: var(--red);
+    }
+
+    .thing-strip {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scroll-snap-type: x proximity;
+    }
+
+    .thing-tile {
+      min-width: 238px;
+      border-radius: 12px;
+      padding: 14px;
+      background: rgba(5, 4, 12, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03);
+      scroll-snap-align: start;
+      text-align: left;
+    }
+
+    .thing-tile.active {
+      border-color: rgba(255, 216, 77, 0.62);
+      box-shadow: 0 0 0 1px rgba(255, 216, 77, 0.28), 0 0 18px rgba(255, 216, 77, 0.16);
+    }
+
+    .thing-detail {
+      margin-top: 14px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .rating-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .log-toggle-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .empty-state {
+      text-align: center;
+    }
+
+    .empty-copy {
+      margin: 10px 0 0;
+    }
+
+    .floating-bar {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      width: min(430px, 100%);
+      transform: translateX(-50%);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      z-index: 8;
+    }
+
+    .floating-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      background: var(--panel-strong);
+      padding: 10px;
+      backdrop-filter: none;
+      box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.1);
+    }
+
+    .quick-add {
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: rgba(3, 10, 14, 0.96);
+      border: 1px solid rgba(0, 240, 255, 0.46);
+      text-align: left;
+      color: var(--text);
+    }
+
+    .quick-add strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .quick-pill {
+      border-radius: 10px;
+      padding: 0 14px;
+      background: rgba(5, 4, 12, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: rgba(238, 251, 255, 0.72);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      min-width: 74px;
+    }
+
+    .notice {
+      padding: 12px 14px;
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .notice.success {
+      color: var(--lime);
+      background: rgba(199, 255, 58, 0.1);
+      border-color: rgba(199, 255, 58, 0.3);
+    }
+
+    .notice.error {
+      color: var(--red);
+      background: rgba(255, 91, 91, 0.1);
+      border-color: rgba(255, 91, 91, 0.3);
+    }
+
+    .sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      z-index: 12;
+    }
+
+    .sheet-backdrop.open {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .sheet {
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      border-radius: 16px 16px 0 0;
+      padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+      border: 1px solid rgba(0, 240, 255, 0.32);
+      background: var(--panel-strong);
+      box-shadow: 0 -1px 0 rgba(0, 240, 255, 0.4);
+    }
+
+    .sheet-handle {
+      width: 56px;
+      height: 6px;
+      border-radius: 999px;
+      margin: 0 auto 16px;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .sheet-title {
+      margin: 6px 0 0;
+      font-size: 24px;
+      line-height: 1;
+      overflow-wrap: anywhere;
+    }
+
+    .sheet-close {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: rgba(238, 251, 255, 0.66);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(238, 251, 255, 0.7);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .segment-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .segment-button {
+      flex: 1;
+      border-radius: 10px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(5, 4, 12, 0.98);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .segment-button.active-self {
+      border-color: rgba(56, 232, 200, 0.42);
+      background: rgba(56, 232, 200, 0.12);
+      color: var(--self);
+    }
+
+    .segment-button.active-world {
+      border-color: rgba(77, 163, 255, 0.36);
+      background: rgba(77, 163, 255, 0.1);
+      color: var(--blue);
+    }
+
+    .primary-submit {
+      width: 100%;
+      border-radius: 10px;
+      padding: 16px 18px;
+      border: 1px solid rgba(0, 240, 255, 0.46);
+      background: rgba(3, 10, 14, 0.96);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .primary-submit.magenta {
+      border-color: rgba(77, 163, 255, 0.34);
+      background: rgba(77, 163, 255, 0.1);
+    }
+
+    .primary-submit.lime {
+      border-color: rgba(199, 255, 58, 0.34);
+      background: rgba(199, 255, 58, 0.1);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    ::selection {
+      background: rgba(77, 163, 255, 0.28);
+      color: #fff;
+    }
+
+    .date-button {
+      height: 58px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      text-align: right;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 216, 77, 0.42);
+      background: rgba(18, 14, 3, 0.96);
+      min-width: 108px;
+    }
+
+    .date-label {
+      font-size: 14px;
+      color: rgba(238, 251, 255, 0.88);
+      white-space: nowrap;
+      overflow-wrap: anywhere;
+      line-height: 1;
+    }
+
+    .point-row {
+      display: grid;
+      grid-template-columns: 118px minmax(0, 1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .time-input {
+      max-width: 132px;
+    }
+
+    .sign-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .sign-button {
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(5, 4, 12, 0.98);
+      font-size: 16px;
+      font-weight: 600;
+      display: grid;
+      place-items: center;
+      min-height: 50px;
+    }
+
+    .sign-button.active-plus {
+      border-color: rgba(148, 255, 59, 0.34);
+      background: rgba(148, 255, 59, 0.1);
+      color: var(--lime);
+    }
+
+    .sign-button.active-minus {
+      border-color: rgba(255, 91, 91, 0.34);
+      background: rgba(255, 91, 91, 0.1);
+      color: var(--red);
+    }
+
+    @media (max-width: 360px) {
+      .dashboard-score strong {
+        font-size: 58px;
+      }
+
+      .app-shell {
+        padding-top: calc(28px + env(safe-area-inset-top));
+      }
+
+      .field-row,
+      .point-row {
+        grid-template-columns: 1fr;
+      }
+
+      .floating-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .quick-pill {
+        min-height: 46px;
+      }
+
+      .source-badge {
+        min-width: 54px;
+      }
+
+      .backup-grid,
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <input id="import-input" class="sr-only" type="file" accept="application/json">
+  <div id="sheet-backdrop" class="sheet-backdrop" aria-hidden="true"></div>
+  <script>
+    (function () {
+      "use strict";
+
+      var STORAGE_KEY = "sibyl.singlefile.v1";
+      var APP_ICON = "data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20180%20180'%3E%0A%20%20%3Crect%20width%3D'180'%20height%3D'180'%20rx%3D'40'%20fill%3D'%2302060b'%2F%3E%0A%20%20%3Cpath%20d%3D'M138%2034H62L42%2054v24l18%2018h56v12H42v38h76l20-20V102l-18-18H64V72h74z'%20fill%3D'%2300f0ff'%2F%3E%0A%20%20%3Cpath%20d%3D'M114%2048H72l-8%208h50zM112%20120H60l-8%208h52z'%20fill%3D'%2302060b'%2F%3E%0A%3C%2Fsvg%3E";
+      var BASE_SELF = 50;
+      var BASE_WORLD = 50;
+
+      var ui = {
+        modal: null,
+        selectedThingId: null,
+        dayKey: toDayKey(new Date()),
+        notice: null,
+        expandedThingLogs: {}
+      };
+
+      var state = loadState();
+      ui.selectedThingId = state.things[0] ? state.things[0].id : null;
+
+      var app = document.getElementById("app");
+      var importInput = document.getElementById("import-input");
+      var sheetBackdrop = document.getElementById("sheet-backdrop");
+
+      document.addEventListener("click", handleClick);
+      document.addEventListener("submit", handleSubmit);
+      document.addEventListener("change", handleChange);
+
+      render();
+
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            var seed = makeSeedData();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
+            return seed;
+          }
+          var parsed = JSON.parse(raw);
+          if (isValidState(parsed)) {
+            return parsed;
+          }
+        } catch (error) {
+          console.warn("Sibyl storage reset", error);
+        }
+        var fallback = makeSeedData();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(fallback));
+        return fallback;
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function makeSeedData() {
+        var morningPagesId = "thing-morning-pages";
+        var workoutId = "thing-workout";
+        var sleepId = "thing-sleep";
+
+        return {
+          version: 1,
+          events: [
+            {
+              id: "event-morning-pages",
+              title: "Finished morning pages",
+              points: 10,
+              source: "self",
+              note: "Three pages before checking messages.",
+              timestamp: makeIso(0, 7, 12),
+              tags: ["writing", "ritual"]
+            },
+            {
+              id: "event-runny-nose",
+              title: "Runny nose",
+              points: -4,
+              source: "outside",
+              note: "Low-key irritating all morning.",
+              timestamp: makeIso(0, 8, 3),
+              tags: ["body"]
+            },
+            {
+              id: "event-walk",
+              title: "Walked 35 minutes",
+              points: 6,
+              source: "self",
+              note: "Used lunch to reset instead of doomscrolling.",
+              timestamp: makeIso(0, 12, 40),
+              tags: ["movement"]
+            },
+            {
+              id: "event-delay",
+              title: "Train delay",
+              points: -3,
+              source: "outside",
+              note: "Lost half an hour on the platform.",
+              timestamp: makeIso(0, 18, 10),
+              tags: ["transit"]
+            },
+            {
+              id: "event-dinner",
+              title: "Cooked dinner at home",
+              points: 5,
+              source: "self",
+              note: "Simple food, solid reset.",
+              timestamp: makeIso(0, 19, 45),
+              tags: ["food", "home"]
+            }
+          ],
+          things: [
+            {
+              id: morningPagesId,
+              name: "Morning Pages",
+              createdAt: makeIso(-12, 8, 0)
+            },
+            {
+              id: workoutId,
+              name: "Workout",
+              createdAt: makeIso(-12, 9, 0)
+            },
+            {
+              id: sleepId,
+              name: "Sleep",
+              createdAt: makeIso(-12, 10, 0)
+            }
+          ],
+          ratings: [
+            {
+              id: "rating-mp-1",
+              thingId: morningPagesId,
+              points: -10,
+              note: "Skipped it completely and the whole day felt thinner.",
+              timestamp: makeIso(-2, 8, 5)
+            },
+            {
+              id: "rating-mp-2",
+              thingId: morningPagesId,
+              points: 16,
+              note: "Locked in and wrote past the timer.",
+              timestamp: makeIso(-1, 7, 30)
+            },
+            {
+              id: "rating-mp-3",
+              thingId: morningPagesId,
+              points: 10,
+              note: "Clean start and steady focus.",
+              timestamp: makeIso(0, 7, 12)
+            },
+            {
+              id: "rating-workout-1",
+              thingId: workoutId,
+              points: 12,
+              note: "Full session without touching the phone.",
+              timestamp: makeIso(-1, 18, 40)
+            },
+            {
+              id: "rating-workout-2",
+              thingId: workoutId,
+              points: 6,
+              note: "Walk counts. Not maximal, but real.",
+              timestamp: makeIso(0, 12, 40)
+            },
+            {
+              id: "rating-sleep-1",
+              thingId: sleepId,
+              points: -8,
+              note: "Restless and woke too early.",
+              timestamp: makeIso(-2, 6, 30)
+            },
+            {
+              id: "rating-sleep-2",
+              thingId: sleepId,
+              points: 9,
+              note: "Seven quiet hours, no interruptions.",
+              timestamp: makeIso(-1, 6, 50)
+            }
+          ]
+        };
+      }
+
+      function isValidState(input) {
+        return !!input &&
+          input.version === 1 &&
+          Array.isArray(input.events) &&
+          Array.isArray(input.things) &&
+          Array.isArray(input.ratings) &&
+          input.events.every(function (item) {
+            return item &&
+              typeof item.id === "string" &&
+              typeof item.title === "string" &&
+              typeof item.points === "number" &&
+              (item.source === "self" || item.source === "outside") &&
+              typeof item.note === "string" &&
+              typeof item.timestamp === "string" &&
+              Array.isArray(item.tags);
+          }) &&
+          input.things.every(function (item) {
+            return item &&
+              typeof item.id === "string" &&
+              typeof item.name === "string" &&
+              typeof item.createdAt === "string";
+          }) &&
+          input.ratings.every(function (item) {
+            return item &&
+              typeof item.id === "string" &&
+              typeof item.thingId === "string" &&
+              typeof item.points === "number" &&
+              typeof item.note === "string" &&
+              typeof item.timestamp === "string";
+          });
+      }
+
+      function calculateScore(events) {
+        var selfPoints = BASE_SELF;
+        var worldPoints = BASE_WORLD;
+
+        events.forEach(function (event) {
+          if (event.source === "self") {
+            selfPoints += event.points;
+          } else {
+            worldPoints += event.points;
+          }
+        });
+
+        return {
+          self: selfPoints,
+          world: worldPoints,
+          total: selfPoints + worldPoints
+        };
+      }
+
+      function calculateThingScore(ratings) {
+        var score = 0;
+
+        ratings.forEach(function (rating) {
+          score += rating.points;
+        });
+
+        return score;
+      }
+
+      function render() {
+        ensureSelectedThing();
+
+        var todayKey = ui.dayKey;
+        var todaysEvents = state.events
+          .filter(function (event) { return toDayKey(event.timestamp) === todayKey; })
+          .sort(function (a, b) { return b.timestamp.localeCompare(a.timestamp); });
+
+        var score = calculateScore(todaysEvents);
+        var thingSummaries = buildThingSummaries();
+        var thingScale = getThingScale(thingSummaries);
+        var selectedThing = thingSummaries.find(function (summary) {
+          return summary.thing.id === ui.selectedThingId;
+        }) || thingSummaries[0] || null;
+
+        app.innerHTML =
+          '<main class="app-shell">' +
+            '<div class="glow-orb orb-cyan"></div>' +
+            '<div class="glow-orb orb-magenta"></div>' +
+            renderHeader() +
+            (ui.notice ? renderNotice(ui.notice) : "") +
+            renderDashboard(score, todaysEvents.length) +
+            renderBackup() +
+            renderTimeline(todaysEvents) +
+            renderThings(thingSummaries, selectedThing, thingScale) +
+          '</main>' +
+          renderFloatingBar();
+
+        renderModal();
+      }
+
+      function renderHeader() {
+        var dayDate = fromDayKey(ui.dayKey);
+        return '' +
+          '<header>' +
+            '<div class="row-between">' +
+              '<div class="brand-lockup">' +
+                '<img class="brand-icon" src="' + APP_ICON + '" alt="">' +
+                '<div class="brand-copy">' +
+                  '<div class="eyebrow">Rating System</div>' +
+                  '<h1 class="display hero-title">Sibyl</h1>' +
+                '</div>' +
+              '</div>' +
+              '<button class="date-button" data-action="open-day-picker" type="button">' +
+                '<div class="tiny-label">Day</div>' +
+                '<div class="date-label">' + escapeHtml(formatDayLabel(dayDate)) + '</div>' +
+              '</button>' +
+            '</div>' +
+          '</header>';
+      }
+
+      function renderNotice(notice) {
+        return '<div class="notice ' + notice.tone + '">' + escapeHtml(notice.text) + '</div>';
+      }
+
+      function renderDashboard(score, eventCount) {
+        var totalScale = Math.max(Math.abs(score.total), 100);
+        var laneScale = Math.max(Math.abs(score.self), Math.abs(score.world), 50);
+        return '' +
+          '<section class="panel">' +
+            '<div class="panel-head">' +
+              '<div>' +
+                '<div class="eyebrow">Daily Signal</div>' +
+                '<h2 class="display panel-title">Dashboard</h2>' +
+              '</div>' +
+              '<div class="counter-pill" style="text-align:right">' +
+                '<div class="tiny-label">Logs</div>' +
+                '<div style="margin-top:6px;font-size:20px;font-weight:700">' + eventCount + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="dashboard-total">' +
+              '<div class="row-between">' +
+                '<div>' +
+                  '<div class="tiny-label">Total</div>' +
+                  '<div class="dashboard-score"><strong class="display">' + score.total + '</strong></div>' +
+                '</div>' +
+                renderDeltaPill(score.total, 100) +
+              '</div>' +
+              '<div class="bar-track"><div class="bar-fill" style="' + renderBarStyle(score.total, totalScale, "var(--cyan)") + '"></div></div>' +
+            '</div>' +
+            '<div class="lane-grid">' +
+              renderLaneCard("self", "Self", score.self, laneScale) +
+              renderLaneCard("world", "World", score.world, laneScale) +
+            '</div>' +
+          '</section>';
+      }
+
+      function renderLaneCard(type, title, value, scale) {
+        var lineColor = type === "self" ? "var(--self)" : "var(--blue)";
+        return '' +
+          '<div class="lane-card ' + type + '">' +
+            '<div class="row-between">' +
+              '<div>' +
+                '<h3 style="color:' + (type === "self" ? "rgba(56,232,200,0.82)" : "rgba(77,163,255,0.8)") + '">' + title + '</h3>' +
+                '<strong>' + value + '</strong>' +
+              '</div>' +
+              renderDeltaPill(value, 50) +
+            '</div>' +
+            '<div class="bar-track"><div class="bar-fill" style="' + renderBarStyle(value, scale, lineColor) + '"></div></div>' +
+          '</div>';
+      }
+
+      function renderBackup() {
+        return '' +
+          '<section class="panel">' +
+            '<div class="panel-head">' +
+              '<div>' +
+                '<div class="eyebrow">Vault</div>' +
+                '<h2 class="display panel-title">Backup</h2>' +
+              '</div>' +
+              '<div class="counter-pill" style="text-align:right">' +
+                '<div class="tiny-label">Storage</div>' +
+                '<div style="margin-top:6px;font-size:14px;color:rgba(238,251,255,0.82)">Local</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="backup-grid">' +
+              '<button class="action-pill" data-action="export-backup" type="button" style="background:rgba(18,14,3,0.96);border-color:rgba(255,216,77,0.42);color:var(--yellow)">Export JSON</button>' +
+              '<button class="action-pill" data-action="import-backup" type="button" style="background:rgba(18,14,3,0.96);border-color:rgba(255,216,77,0.42);color:var(--yellow)">Import JSON</button>' +
+            '</div>' +
+            '<div class="metric-grid">' +
+              renderMetric("Logs", state.events.length) +
+              renderMetric("Events", state.things.length) +
+              renderMetric("Ratings", state.ratings.length) +
+            '</div>' +
+          '</section>';
+      }
+
+      function renderMetric(label, value) {
+        return '' +
+          '<div class="metric-card">' +
+            '<div class="tiny-label">' + escapeHtml(label) + '</div>' +
+            '<span class="metric-value">' + value + '</span>' +
+          '</div>';
+      }
+
+      function renderTimeline(events) {
+        return '' +
+          '<section class="panel">' +
+            '<div class="panel-head">' +
+              '<div>' +
+                '<div class="eyebrow">' + escapeHtml(formatDayLabel(fromDayKey(ui.dayKey))) + '</div>' +
+                '<h2 class="display panel-title">Timeline</h2>' +
+              '</div>' +
+              '<button class="action-pill" data-action="open-event-create" type="button">Add Log</button>' +
+            '</div>' +
+            '<div class="timeline">' +
+              (events.length ? events.map(renderEventEntry).join("") : renderEmpty("No logs")) +
+            '</div>' +
+          '</section>';
+      }
+
+      function renderEventEntry(event) {
+        return '' +
+          '<article class="timeline-entry">' +
+            '<div class="timeline-row">' +
+              '<div class="source-badge ' + (event.source === "self" ? "source-self" : "source-world") + '">' + (event.source === "self" ? "Self" : "World") + '</div>' +
+              '<div class="timeline-main">' +
+                '<div class="timeline-entry-head">' +
+                  '<div class="timeline-copy">' +
+                    '<div class="tiny-label timeline-time">' + escapeHtml(formatTimelineTime(event.timestamp)) + '</div>' +
+                    '<h3 class="entry-title">' + escapeHtml(event.title) + '</h3>' +
+                  '</div>' +
+                  renderPointsPill(event.points) +
+                '</div>' +
+                (event.note ? '<p class="entry-note">' + escapeHtml(event.note) + '</p>' : "") +
+                (event.tags.length
+                  ? '<div class="timeline-tag-row">' +
+                      event.tags.map(function (tag) {
+                        return '<span class="timeline-tag">#' + escapeHtml(tag) + '</span>';
+                      }).join("") +
+                    '</div>'
+                  : '') +
+              '</div>' +
+            '</div>' +
+            '<div class="entry-actions">' +
+              '<button class="mini-action" data-action="open-event-edit" data-id="' + escapeHtml(event.id) + '" type="button">Edit</button>' +
+              '<button class="mini-action delete" data-action="delete-event" data-id="' + escapeHtml(event.id) + '" type="button">Delete</button>' +
+            '</div>' +
+          '</article>';
+      }
+
+      function renderThings(summaries, selectedThing, thingScale) {
+        return '' +
+          '<section class="panel">' +
+            '<div class="panel-head">' +
+              '<div>' +
+                '<div class="eyebrow">Induvidual</div>' +
+                '<h2 class="display panel-title">Events</h2>' +
+              '</div>' +
+              '<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">' +
+                '<button class="action-pill" data-action="open-thing-create" type="button">New Event</button>' +
+                '<button class="action-pill" data-action="open-rating-create" type="button">Add Rating</button>' +
+              '</div>' +
+            '</div>' +
+            (summaries.length ? renderThingArea(summaries, selectedThing, thingScale) : renderEmpty("No events")) +
+          '</section>';
+      }
+
+      function renderThingArea(summaries, selectedThing, thingScale) {
+        return '' +
+          '<div class="thing-strip">' +
+            summaries.map(function (summary) {
+              return renderThingTile(summary, selectedThing && summary.thing.id === selectedThing.thing.id, thingScale);
+            }).join("") +
+          '</div>' +
+          (selectedThing ? renderThingDetail(selectedThing, thingScale) : "");
+      }
+
+      function renderThingTile(summary, isActive, thingScale) {
+        return '' +
+          '<button class="thing-tile' + (isActive ? ' active' : '') + '" data-action="select-thing" data-id="' + escapeHtml(summary.thing.id) + '" type="button">' +
+            '<div class="row-between" style="align-items:flex-start;gap:12px">' +
+              '<div>' +
+                '<div class="thing-name">' + escapeHtml(summary.thing.name) + '</div>' +
+                '<div class="tiny-label" style="margin-top:6px">' + summary.ratings.length + ' logs</div>' +
+              '</div>' +
+              renderDeltaPill(summary.score, 0) +
+            '</div>' +
+            '<div style="margin-top:12px;text-align:left">' +
+              '<div class="bar-track" style="margin-top:0"><div class="bar-fill" style="' + renderBarStyle(summary.score, thingScale, "var(--cyan)") + '"></div></div>' +
+            '</div>' +
+          '</button>';
+      }
+
+      function renderThingDetail(summary, thingScale) {
+        var expanded = !!ui.expandedThingLogs[summary.thing.id];
+        var canFold = summary.ratings.length > 5;
+        var visibleRatings = canFold && !expanded ? summary.ratings.slice(0, 5) : summary.ratings;
+        return '' +
+          '<div class="thing-detail">' +
+            '<div class="thing-detail-head">' +
+              '<div>' +
+                '<div class="eyebrow" style="color:rgba(0,240,255,0.76)">Events</div>' +
+                '<h3 class="display panel-title" style="font-size:28px;margin-top:10px">' + escapeHtml(summary.thing.name) + '</h3>' +
+              '</div>' +
+              '<div class="thing-actions">' +
+                '<button class="mini-action" data-action="open-thing-edit" data-id="' + escapeHtml(summary.thing.id) + '" type="button">Edit</button>' +
+                '<button class="mini-action" data-action="open-rating-create" data-thing-id="' + escapeHtml(summary.thing.id) + '" type="button">Rate</button>' +
+                '<button class="mini-action delete" data-action="delete-thing" data-id="' + escapeHtml(summary.thing.id) + '" type="button">Delete</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="dashboard-total" style="margin-top:14px">' +
+              '<div class="tiny-label">Score</div>' +
+              '<div class="dashboard-score"><strong class="display">' + summary.score + '</strong></div>' +
+              '<div class="bar-track"><div class="bar-fill" style="' + renderBarStyle(summary.score, thingScale, "var(--cyan)") + '"></div></div>' +
+            '</div>' +
+            (canFold
+              ? '<div class="log-toggle-row"><button class="mini-action" data-action="toggle-thing-logs" data-id="' + escapeHtml(summary.thing.id) + '" type="button">' + (expanded ? 'Hide Logs' : 'More Logs (' + summary.ratings.length + ')') + '</button></div>'
+              : '') +
+            '<div class="rating-list">' +
+              (visibleRatings.length ? visibleRatings.map(renderRatingEntry).join("") : renderEmpty("No ratings")) +
+            '</div>' +
+          '</div>';
+      }
+
+      function renderRatingEntry(rating) {
+        return '' +
+          '<article class="rating-entry">' +
+            '<div class="rating-entry-head">' +
+              '<div style="min-width:0">' +
+                '<div class="tiny-label">' + escapeHtml(formatDetailDate(rating.timestamp)) + '</div>' +
+                (rating.note ? '<p class="entry-note">' + escapeHtml(rating.note) + '</p>' : "") +
+              '</div>' +
+              renderPointsPill(rating.points) +
+            '</div>' +
+            '<div class="entry-actions">' +
+              '<button class="mini-action" data-action="open-rating-edit" data-id="' + escapeHtml(rating.id) + '" type="button">Edit</button>' +
+              '<button class="mini-action delete" data-action="delete-rating" data-id="' + escapeHtml(rating.id) + '" type="button">Delete</button>' +
+            '</div>' +
+          '</article>';
+      }
+
+      function renderFloatingBar() {
+        return '' +
+          '<div class="floating-bar">' +
+            '<div class="floating-shell">' +
+              '<button class="quick-add" data-action="open-event-create" type="button">' +
+                '<strong>+ Quick Log</strong>' +
+              '</button>' +
+              '<button class="quick-pill" data-action="open-thing-create" type="button">Event</button>' +
+              '<button class="quick-pill" data-action="open-rating-create" type="button">Rate</button>' +
+            '</div>' +
+          '</div>';
+      }
+
+      function renderEmpty(title, copy) {
+        return '' +
+          '<div class="empty-state">' +
+            '<div class="tiny-label">' + escapeHtml(title) + '</div>' +
+            (copy ? '<p class="empty-copy">' + escapeHtml(copy) + '</p>' : '') +
+          '</div>';
+      }
+
+      function renderPointsPill(points, neutral) {
+        if (neutral) {
+          return '<span class="score-pill score-neutral">0</span>';
+        }
+        var positive = points >= 0;
+        return '<span class="score-pill ' + (positive ? 'score-positive' : 'score-negative') + '">' + (points > 0 ? '+' : '') + points + '</span>';
+      }
+
+      function renderDeltaPill(value, baseline) {
+        var delta = value - baseline;
+        var tone = delta > 0 ? "lane-positive" : delta < 0 ? "lane-negative" : "lane-neutral";
+        var text = delta > 0 ? "+" + delta : delta < 0 ? String(delta) : "0";
+        return '<span class="lane-pill ' + tone + '">' + text + '</span>';
+      }
+
+      function renderBarStyle(value, scale, accentColor) {
+        var color = value < 0 ? "var(--red)" : accentColor;
+        return "width:" + magnitudePercent(value, scale) + "%;background:" + color + ";box-shadow:inset 0 0 0 1px " + rgba(color, 0.55) + ";";
+      }
+
+      function getThingScale(summaries) {
+        return summaries.reduce(function (max, summary) {
+          return Math.max(max, Math.abs(summary.score));
+        }, 20);
+      }
+
+      function renderModal() {
+        if (!ui.modal) {
+          sheetBackdrop.className = "sheet-backdrop";
+          sheetBackdrop.setAttribute("aria-hidden", "true");
+          sheetBackdrop.innerHTML = "";
+          return;
+        }
+
+        var modal = ui.modal;
+        var body = "";
+        if (modal.type === "event") {
+          body = renderEventForm(modal);
+        } else if (modal.type === "thing") {
+          body = renderThingForm(modal);
+        } else if (modal.type === "rating") {
+          body = renderRatingForm(modal);
+        } else if (modal.type === "day") {
+          body = renderDayForm();
+        }
+
+        sheetBackdrop.className = "sheet-backdrop open";
+        sheetBackdrop.setAttribute("aria-hidden", "false");
+        sheetBackdrop.innerHTML =
+          '<div class="sheet" role="dialog" aria-modal="true">' +
+            '<div class="sheet-handle"></div>' +
+            body +
+          '</div>';
+      }
+
+      function renderEventForm(modal) {
+        var event = modal.id ? findById(state.events, modal.id) : null;
+        var source = event ? event.source : "self";
+        var sign = event && event.points < 0 ? "minus" : "plus";
+        var amount = event ? Math.abs(event.points) : "";
+        return '' +
+          '<div class="sheet-header">' +
+            '<div>' +
+              '<div class="eyebrow" style="color:rgba(255,216,77,0.78)">' + (event ? 'Edit' : 'New') + '</div>' +
+              '<h2 class="display sheet-title">' + (event ? 'Edit Log' : 'Log') + '</h2>' +
+            '</div>' +
+            '<button class="sheet-close" data-action="close-modal" type="button">Close</button>' +
+          '</div>' +
+          '<form class="form-grid" data-form="event">' +
+            (event ? '<input type="hidden" name="id" value="' + escapeAttribute(event.id) + '">' : "") +
+            renderField("Title", '<input name="title" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" value="' + escapeAttribute(event ? event.title : "") + '" required>') +
+            renderField("Points", renderSignedPointsControl(sign, amount, "10")) +
+            renderField("Time", '<input class="time-input" name="time" type="time" step="60" value="' + escapeAttribute(event ? formatInputTime(event.timestamp) : defaultFormTime()) + '" required>') +
+            renderField(
+              "Source",
+              '<div class="segment-row">' +
+                '<button class="segment-button ' + (source === "self" ? 'active-self' : '') + '" type="button" data-action="set-source" data-source="self">Self</button>' +
+                '<button class="segment-button ' + (source === "outside" ? 'active-world' : '') + '" type="button" data-action="set-source" data-source="outside">World</button>' +
+              '</div>' +
+              '<input type="hidden" name="source" value="' + escapeAttribute(source) + '">'
+            ) +
+            renderField("Tags", '<input name="tags" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" value="' + escapeAttribute(event ? event.tags.join(", ") : "") + '">') +
+            renderField("Note", '<textarea name="note">' + escapeHtml(event ? event.note : "") + '</textarea>') +
+            '<button class="primary-submit" type="submit">Save Log</button>' +
+          '</form>';
+      }
+
+      function renderThingForm(modal) {
+        var thing = modal.id ? findById(state.things, modal.id) : null;
+        return '' +
+          '<div class="sheet-header">' +
+            '<div>' +
+              '<div class="eyebrow" style="color:rgba(199,255,58,0.78)">' + (thing ? 'Edit' : 'New') + '</div>' +
+              '<h2 class="display sheet-title">' + (thing ? 'Edit Event' : 'Create Event') + '</h2>' +
+            '</div>' +
+            '<button class="sheet-close" data-action="close-modal" type="button">Close</button>' +
+          '</div>' +
+          '<form class="form-grid" data-form="thing">' +
+            (thing ? '<input type="hidden" name="id" value="' + escapeAttribute(thing.id) + '">' : "") +
+            renderField("Name", '<input name="name" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" value="' + escapeAttribute(thing ? thing.name : "") + '" required>') +
+            '<button class="primary-submit lime" type="submit">' + (thing ? 'Update Event' : 'Save Event') + '</button>' +
+          '</form>';
+      }
+
+      function renderRatingForm(modal) {
+        var rating = modal.id ? findById(state.ratings, modal.id) : null;
+        var currentThingId = modal.thingId || (rating ? rating.thingId : ui.selectedThingId || (state.things[0] && state.things[0].id) || "");
+        var sign = rating && rating.points < 0 ? "minus" : "plus";
+        var amount = rating ? Math.abs(rating.points) : "";
+        return '' +
+          '<div class="sheet-header">' +
+            '<div>' +
+              '<div class="eyebrow" style="color:rgba(77,163,255,0.78)">' + (rating ? 'Edit' : 'New') + '</div>' +
+              '<h2 class="display sheet-title">' + (rating ? 'Edit Event Rating' : 'Rate Event') + '</h2>' +
+            '</div>' +
+            '<button class="sheet-close" data-action="close-modal" type="button">Close</button>' +
+          '</div>' +
+          '<form class="form-grid" data-form="rating">' +
+            (rating ? '<input type="hidden" name="id" value="' + escapeAttribute(rating.id) + '">' : "") +
+            renderField(
+              "Event",
+              '<select name="thingId" required>' +
+                '<option value="">Choose an event</option>' +
+                state.things.map(function (thing) {
+                  return '<option value="' + escapeAttribute(thing.id) + '"' + (thing.id === currentThingId ? ' selected' : '') + '>' + escapeHtml(thing.name) + '</option>';
+                }).join("") +
+              '</select>'
+            ) +
+            renderField("Points", renderSignedPointsControl(sign, amount, "16")) +
+            renderField("Time", '<input class="time-input" name="time" type="time" step="60" value="' + escapeAttribute(rating ? formatInputTime(rating.timestamp) : defaultFormTime()) + '" required>') +
+            renderField("Note", '<textarea name="note">' + escapeHtml(rating ? rating.note : "") + '</textarea>') +
+            '<button class="primary-submit magenta" type="submit">Save Rating</button>' +
+          '</form>';
+      }
+
+      function renderDayForm() {
+        return '' +
+          '<div class="sheet-header">' +
+            '<div>' +
+              '<div class="eyebrow" style="color:rgba(255,216,77,0.78)">Day</div>' +
+              '<h2 class="display sheet-title">Choose Date</h2>' +
+            '</div>' +
+            '<button class="sheet-close" data-action="close-modal" type="button">Close</button>' +
+          '</div>' +
+          '<form class="form-grid" data-form="day">' +
+            renderField("Date", '<input name="day" type="date" value="' + escapeAttribute(ui.dayKey) + '" required>') +
+            '<div class="field-row">' +
+              '<button class="primary-submit" type="button" data-action="set-day-today" style="border-color:rgba(255,216,77,0.34);background:rgba(255,216,77,0.1)">Today</button>' +
+              '<button class="primary-submit" type="submit">Open</button>' +
+            '</div>' +
+          '</form>';
+      }
+
+      function renderSignedPointsControl(sign, amount, placeholder) {
+        return '' +
+          '<div class="point-row">' +
+            '<div class="sign-row">' +
+              '<button class="sign-button ' + (sign === "plus" ? 'active-plus' : '') + '" type="button" data-action="set-sign" data-sign="plus">+</button>' +
+              '<button class="sign-button ' + (sign === "minus" ? 'active-minus' : '') + '" type="button" data-action="set-sign" data-sign="minus">-</button>' +
+            '</div>' +
+            '<div>' +
+              '<input type="hidden" name="sign" value="' + escapeAttribute(sign) + '">' +
+              '<input name="points" type="number" min="1" step="1" inputmode="numeric" placeholder="' + escapeAttribute(placeholder) + '" value="' + escapeAttribute(amount ? String(amount) : "") + '" required>' +
+            '</div>' +
+          '</div>';
+      }
+
+      function renderField(label, control) {
+        return '<label><span class="field-label">' + escapeHtml(label) + '</span>' + control + '</label>';
+      }
+
+      function handleClick(event) {
+        var target = event.target.closest("[data-action]");
+
+        if (sheetBackdrop.classList.contains("open") && event.target === sheetBackdrop) {
+          closeModal();
+          return;
+        }
+
+        if (!target) {
+          return;
+        }
+
+        var action = target.getAttribute("data-action");
+
+        if (action === "open-event-create") {
+          ui.modal = { type: "event" };
+        } else if (action === "open-event-edit") {
+          ui.modal = { type: "event", id: target.getAttribute("data-id") };
+        } else if (action === "open-day-picker") {
+          ui.modal = { type: "day" };
+        } else if (action === "delete-event") {
+          deleteEvent(target.getAttribute("data-id"));
+        } else if (action === "open-thing-create") {
+          ui.modal = { type: "thing" };
+        } else if (action === "open-thing-edit") {
+          ui.modal = { type: "thing", id: target.getAttribute("data-id") };
+        } else if (action === "delete-thing") {
+          deleteThing(target.getAttribute("data-id"));
+        } else if (action === "select-thing") {
+          ui.selectedThingId = target.getAttribute("data-id");
+        } else if (action === "toggle-thing-logs") {
+          var logsId = target.getAttribute("data-id");
+          ui.expandedThingLogs[logsId] = !ui.expandedThingLogs[logsId];
+        } else if (action === "open-rating-create") {
+          if (!state.things.length) {
+            ui.modal = { type: "thing" };
+            setNotice("error", "Create an event first.");
+            render();
+            return;
+          }
+          ui.modal = { type: "rating", thingId: target.getAttribute("data-thing-id") || ui.selectedThingId };
+        } else if (action === "open-rating-edit") {
+          ui.modal = { type: "rating", id: target.getAttribute("data-id") };
+        } else if (action === "delete-rating") {
+          deleteRating(target.getAttribute("data-id"));
+        } else if (action === "close-modal") {
+          closeModal();
+        } else if (action === "set-source") {
+          var form = target.closest("form");
+          var sourceInput = form && form.querySelector('input[name="source"]');
+          if (sourceInput) {
+            sourceInput.value = target.getAttribute("data-source");
+            Array.prototype.forEach.call(
+              form.querySelectorAll('[data-action="set-source"]'),
+              function (button) {
+                button.classList.remove("active-self", "active-world");
+                if (button.getAttribute("data-source") === sourceInput.value) {
+                  button.classList.add(sourceInput.value === "self" ? "active-self" : "active-world");
+                }
+              }
+            );
+          }
+          return;
+        } else if (action === "set-sign") {
+          var signForm = target.closest("form");
+          var signInput = signForm && signForm.querySelector('input[name="sign"]');
+          if (signInput) {
+            signInput.value = target.getAttribute("data-sign");
+            Array.prototype.forEach.call(
+              signForm.querySelectorAll('[data-action="set-sign"]'),
+              function (button) {
+                button.classList.remove("active-plus", "active-minus");
+                if (button.getAttribute("data-sign") === signInput.value) {
+                  button.classList.add(signInput.value === "plus" ? "active-plus" : "active-minus");
+                }
+              }
+            );
+          }
+          return;
+        } else if (action === "set-day-today") {
+          ui.dayKey = toDayKey(new Date());
+          closeModal();
+          return;
+        } else if (action === "export-backup") {
+          exportBackup();
+        } else if (action === "import-backup") {
+          importInput.click();
+          return;
+        }
+
+        render();
+      }
+
+      function handleSubmit(event) {
+        var form = event.target;
+        if (!form.matches("[data-form]")) {
+          return;
+        }
+
+        event.preventDefault();
+        var formType = form.getAttribute("data-form");
+        var data = new FormData(form);
+
+        if (formType === "event") {
+          saveEventFromForm(data);
+        } else if (formType === "thing") {
+          saveThingFromForm(data);
+        } else if (formType === "rating") {
+          saveRatingFromForm(data);
+        } else if (formType === "day") {
+          saveDayFromForm(data);
+        }
+
+        render();
+      }
+
+      function handleChange(event) {
+        if (event.target === importInput) {
+          importBackup(event.target.files && event.target.files[0]);
+        }
+      }
+
+      function saveEventFromForm(formData) {
+        var id = toText(formData.get("id"));
+        var title = toText(formData.get("title")).trim();
+        var amount = Number(formData.get("points"));
+        var sign = toText(formData.get("sign")) === "minus" ? -1 : 1;
+        var points = amount * sign;
+        var source = toText(formData.get("source")) === "outside" ? "outside" : "self";
+        var note = toText(formData.get("note")).trim();
+        var timestamp = toIsoFromDayAndTime(ui.dayKey, toText(formData.get("time")));
+        var tags = toText(formData.get("tags"))
+          .split(",")
+          .map(function (tag) { return tag.trim(); })
+          .filter(Boolean)
+          .filter(function (tag, index, all) { return all.indexOf(tag) === index; });
+
+        if (!title || !Number.isFinite(amount) || amount <= 0 || !timestamp) {
+          setNotice("error", "Need title, points, time.");
+          return;
+        }
+
+        var payload = {
+          id: id || createId("event"),
+          title: title,
+          points: points,
+          source: source,
+          note: note,
+          timestamp: timestamp,
+          tags: tags
+        };
+
+        if (id) {
+          state.events = state.events.map(function (entry) {
+            return entry.id === id ? payload : entry;
+          });
+          setNotice("success", "Log saved.");
+        } else {
+          state.events.push(payload);
+          setNotice("success", "Log added.");
+        }
+
+        saveState();
+        closeModal(false);
+      }
+
+      function saveThingFromForm(formData) {
+        var id = toText(formData.get("id"));
+        var name = toText(formData.get("name")).trim();
+
+        if (!name) {
+          setNotice("error", "Need a name.");
+          return;
+        }
+
+        var exists = state.things.some(function (thing) {
+          return thing.id !== id && thing.name.trim().toLowerCase() === name.toLowerCase();
+        });
+
+        if (exists) {
+          setNotice("error", "Name already exists.");
+          return;
+        }
+
+        if (id) {
+          state.things = state.things.map(function (thing) {
+            return thing.id === id ? { id: thing.id, name: name, createdAt: thing.createdAt } : thing;
+          });
+          ui.selectedThingId = id;
+          setNotice("success", "Event saved.");
+        } else {
+          var newThing = {
+            id: createId("thing"),
+            name: name,
+            createdAt: new Date().toISOString()
+          };
+          state.things.push(newThing);
+          ui.selectedThingId = newThing.id;
+          setNotice("success", "Event added.");
+        }
+
+        saveState();
+        closeModal(false);
+      }
+
+      function saveRatingFromForm(formData) {
+        var id = toText(formData.get("id"));
+        var thingId = toText(formData.get("thingId"));
+        var amount = Number(formData.get("points"));
+        var sign = toText(formData.get("sign")) === "minus" ? -1 : 1;
+        var points = amount * sign;
+        var note = toText(formData.get("note")).trim();
+        var timestamp = toIsoFromDayAndTime(ui.dayKey, toText(formData.get("time")));
+
+        if (!thingId || !findById(state.things, thingId)) {
+          setNotice("error", "Pick an event.");
+          return;
+        }
+
+        if (!Number.isFinite(amount) || amount <= 0 || !timestamp) {
+          setNotice("error", "Need points and time.");
+          return;
+        }
+
+        var payload = {
+          id: id || createId("rating"),
+          thingId: thingId,
+          points: points,
+          note: note,
+          timestamp: timestamp
+        };
+
+        if (id) {
+          state.ratings = state.ratings.map(function (entry) {
+            return entry.id === id ? payload : entry;
+          });
+          setNotice("success", "Rating saved.");
+        } else {
+          state.ratings.push(payload);
+          setNotice("success", "Rating added.");
+        }
+
+        ui.selectedThingId = thingId;
+        saveState();
+        closeModal(false);
+      }
+
+      function saveDayFromForm(formData) {
+        var day = toText(formData.get("day"));
+        if (!day) {
+          setNotice("error", "Pick a date.");
+          return;
+        }
+        ui.dayKey = day;
+        closeModal(false);
+      }
+
+      function deleteEvent(id) {
+        var event = findById(state.events, id);
+        if (!event) {
+          return;
+        }
+        if (!window.confirm("Delete this log?")) {
+          return;
+        }
+        state.events = state.events.filter(function (entry) { return entry.id !== id; });
+        saveState();
+        setNotice("success", "Log deleted.");
+      }
+
+      function deleteThing(id) {
+        var thing = findById(state.things, id);
+        if (!thing) {
+          return;
+        }
+        var ratingCount = state.ratings.filter(function (entry) { return entry.thingId === id; }).length;
+        var prompt = ratingCount
+          ? 'Delete "' + thing.name + '" and its ' + ratingCount + ' ratings?'
+          : 'Delete "' + thing.name + '"?';
+        if (!window.confirm(prompt)) {
+          return;
+        }
+        state.things = state.things.filter(function (entry) { return entry.id !== id; });
+        state.ratings = state.ratings.filter(function (entry) { return entry.thingId !== id; });
+        delete ui.expandedThingLogs[id];
+        if (ui.selectedThingId === id) {
+          ui.selectedThingId = state.things[0] ? state.things[0].id : null;
+        }
+        saveState();
+        setNotice("success", "Event deleted.");
+      }
+
+      function deleteRating(id) {
+        var rating = findById(state.ratings, id);
+        if (!rating) {
+          return;
+        }
+        if (!window.confirm("Delete this rating?")) {
+          return;
+        }
+        state.ratings = state.ratings.filter(function (entry) { return entry.id !== id; });
+        saveState();
+        setNotice("success", "Rating deleted.");
+      }
+
+      function exportBackup() {
+        var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = "sibyl-backup-" + toDayKey(new Date()) + ".json";
+        link.click();
+        URL.revokeObjectURL(url);
+        setNotice("success", "Backup exported.");
+        render();
+      }
+
+      function importBackup(file) {
+        importInput.value = "";
+        if (!file) {
+          return;
+        }
+        if (!window.confirm("Importing a backup will replace the current local Sibyl data on this device.")) {
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function () {
+          try {
+            var parsed = JSON.parse(String(reader.result || ""));
+            if (!isValidState(parsed)) {
+              throw new Error("Invalid Sibyl backup");
+            }
+            state = parsed;
+            ui.selectedThingId = state.things[0] ? state.things[0].id : null;
+            saveState();
+            setNotice("success", "Backup imported.");
+          } catch (error) {
+            console.error(error);
+            setNotice("error", "Import failed.");
+          }
+          render();
+        };
+        reader.readAsText(file);
+      }
+
+      function buildThingSummaries() {
+        return state.things.map(function (thing) {
+          var ratings = state.ratings
+            .filter(function (entry) {
+              return entry.thingId === thing.id;
+            })
+            .sort(function (a, b) { return b.timestamp.localeCompare(a.timestamp); });
+          var score = calculateThingScore(ratings);
+          return {
+            thing: thing,
+            ratings: ratings,
+            latest: ratings[0] || null,
+            score: score
+          };
+        });
+      }
+
+      function ensureSelectedThing() {
+        if (!ui.selectedThingId || !findById(state.things, ui.selectedThingId)) {
+          ui.selectedThingId = state.things[0] ? state.things[0].id : null;
+        }
+      }
+
+      function closeModal(renderAfter) {
+        ui.modal = null;
+        if (renderAfter !== false) {
+          render();
+        }
+      }
+
+      function setNotice(tone, text) {
+        ui.notice = { tone: tone, text: text };
+        window.clearTimeout(setNotice._timer);
+        setNotice._timer = window.setTimeout(function () {
+          ui.notice = null;
+          render();
+        }, 3600);
+      }
+
+      function createId(prefix) {
+        return prefix + "-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
+      }
+
+      function makeIso(dayOffset, hour, minute) {
+        var date = new Date();
+        date.setDate(date.getDate() + dayOffset);
+        date.setHours(hour, minute, 0, 0);
+        return date.toISOString();
+      }
+
+      function toDayKey(input) {
+        var date = input instanceof Date ? input : new Date(input);
+        return [
+          date.getFullYear(),
+          String(date.getMonth() + 1).padStart(2, "0"),
+          String(date.getDate()).padStart(2, "0")
+        ].join("-");
+      }
+
+      function formatDayLabel(input) {
+        return new Intl.DateTimeFormat("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric"
+        }).format(input instanceof Date ? input : new Date(input));
+      }
+
+      function fromDayKey(dayKey) {
+        var parts = dayKey.split("-").map(Number);
+        return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0, 0);
+      }
+
+      function formatTimelineTime(input) {
+        return formatClockTime(input);
+      }
+
+      function formatDetailDate(input) {
+        var date = new Date(input);
+        return new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric"
+        }).format(date) + " " + formatClockTime(date);
+      }
+
+      function formatClockTime(input) {
+        var date = input instanceof Date ? input : new Date(input);
+        return [
+          String(date.getHours()).padStart(2, "0"),
+          String(date.getMinutes()).padStart(2, "0")
+        ].join(":");
+      }
+
+      function formatInputTime(input) {
+        return formatClockTime(input);
+      }
+
+      function defaultFormTime() {
+        var todayKey = toDayKey(new Date());
+        if (ui.dayKey === todayKey) {
+          return formatInputTime(new Date());
+        }
+        return "12:00";
+      }
+
+      function toIsoFromDayAndTime(dayKey, timeValue) {
+        if (!dayKey || !timeValue) {
+          return "";
+        }
+        var dayParts = dayKey.split("-").map(Number);
+        var timeParts = timeValue.split(":").map(Number);
+        if (dayParts.length !== 3 || timeParts.length < 2) {
+          return "";
+        }
+        var date = new Date(dayParts[0], dayParts[1] - 1, dayParts[2], timeParts[0], timeParts[1], 0, 0);
+        return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+      }
+
+      function findById(list, id) {
+        return list.find(function (item) { return item.id === id; }) || null;
+      }
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function percent(value, max) {
+        return clamp((value / max) * 100, 0, 100).toFixed(1);
+      }
+
+      function magnitudePercent(value, max) {
+        return clamp((Math.abs(value) / max) * 100, 0, 100).toFixed(1);
+      }
+
+      function toText(value) {
+        return value == null ? "" : String(value);
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function escapeAttribute(value) {
+        return escapeHtml(value).replace(/`/g, "&#96;");
+      }
+
+      function rgba(color, alpha) {
+        if (color === "var(--cyan)") {
+          return "rgba(0,240,255," + alpha + ")";
+        }
+        if (color === "var(--self)") {
+          return "rgba(56,232,200," + alpha + ")";
+        }
+        if (color === "var(--blue)") {
+          return "rgba(77,163,255," + alpha + ")";
+        }
+        if (color === "var(--red)") {
+          return "rgba(255,91,91," + alpha + ")";
+        }
+        if (color === "var(--yellow)") {
+          return "rgba(255,216,77," + alpha + ")";
+        }
+        return "rgba(148,255,59," + alpha + ")";
+      }
+    })();
+  </script>
+</body>
+</html>
