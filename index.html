@@ -1086,7 +1086,7 @@
           '<header>' +
             '<div class="row-between">' +
               '<div>' +
-                '<div class="eyebrow">Private Day Ledger</div>' +
+                '<div class="eyebrow">Everyday Ledger</div>' +
                 '<h1 class="display hero-title">Sibyl</h1>' +
               '</div>' +
               '<div class="counter-pill" style="text-align:right">' +
@@ -1094,7 +1094,7 @@
                 '<div style="margin-top:6px;font-size:14px;color:rgba(238,251,255,0.84)">' + escapeHtml(formatDayLabel(new Date())) + '</div>' +
               '</div>' +
             '</div>' +
-            '<p class="hero-copy">Start at 100. Spend, reclaim, and track signal across the parts you control and the parts you do not.</p>' +
+            '<p class="hero-copy">Calculating...</p>' +
           '</header>';
       }
 
@@ -1132,7 +1132,7 @@
               renderLaneCard("self", "Self", score.self, "Habits, choices, focus, and recovery you can influence directly.") +
               renderLaneCard("world", "World", score.world, "Weather, symptoms, transit, timing, and other outside pressure.") +
             '</div>' +
-            '<p class="helper-copy">Every local day starts at Self=50 and World=50. Events modify only their own lane, and both lanes clamp to 0–50.</p>' +
+            '<p class="helper-copy"></p>' +
           '</section>';
       }
 
