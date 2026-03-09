@@ -603,7 +603,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 12px;
+      margin-top: 0;
     }
 
     .timeline-filter-button {
@@ -623,6 +623,28 @@
       border-color: rgba(255, 216, 77, 0.44);
       background: rgba(255, 216, 77, 0.12);
       color: var(--yellow);
+    }
+
+    .timeline-head {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .timeline-head-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .timeline-head-main {
+      min-width: 0;
+    }
+
+    .timeline-head .action-pill {
+      justify-self: end;
+      flex-shrink: 0;
     }
 
     .entry-actions,
@@ -1546,20 +1568,22 @@
       function renderTimeline(events, tags) {
         return '' +
           '<section class="panel">' +
-            '<div class="panel-head">' +
-              '<div>' +
-                '<div class="eyebrow">' + escapeHtml(formatDayLabel(fromDayKey(ui.dayKey))) + '</div>' +
-                '<h2 class="display panel-title">Timeline</h2>' +
-                (tags.length
-                  ? '<div class="timeline-filter-row">' +
-                      '<button class="timeline-filter-button' + (!ui.timelineTag ? ' active' : '') + '" data-action="filter-timeline-tag" data-tag="" type="button">All</button>' +
-                      tags.map(function (tag) {
-                        return '<button class="timeline-filter-button' + (ui.timelineTag === tag ? ' active' : '') + '" data-action="filter-timeline-tag" data-tag="' + escapeAttribute(tag) + '" type="button">#' + escapeHtml(tag) + '</button>';
-                      }).join("") +
-                    '</div>'
-                  : '') +
+            '<div class="timeline-head">' +
+              '<div class="timeline-head-top">' +
+                '<div class="timeline-head-main">' +
+                  '<div class="eyebrow">' + escapeHtml(formatDayLabel(fromDayKey(ui.dayKey))) + '</div>' +
+                  '<h2 class="display panel-title">Timeline</h2>' +
+                '</div>' +
+                '<button class="action-pill" data-action="open-event-create" type="button">Add Log</button>' +
               '</div>' +
-              '<button class="action-pill" data-action="open-event-create" type="button">Add Log</button>' +
+              (tags.length
+                ? '<div class="timeline-filter-row">' +
+                    '<button class="timeline-filter-button' + (!ui.timelineTag ? ' active' : '') + '" data-action="filter-timeline-tag" data-tag="" type="button">All</button>' +
+                    tags.map(function (tag) {
+                      return '<button class="timeline-filter-button' + (ui.timelineTag === tag ? ' active' : '') + '" data-action="filter-timeline-tag" data-tag="' + escapeAttribute(tag) + '" type="button">#' + escapeHtml(tag) + '</button>';
+                    }).join("") +
+                  '</div>'
+                : '') +
             '</div>' +
             '<div class="timeline">' +
               (events.length ? events.map(renderEventEntry).join("") : renderEmpty("No logs")) +
